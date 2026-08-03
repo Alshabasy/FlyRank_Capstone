@@ -1,0 +1,43 @@
+/* Custom cursor keyframe animations only */
+
+@keyframes cursor-dot-pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    background-color: var(--skyblue);
+  }
+  40% {
+    transform: translate(-50%, -50%) scale(1.8);
+    background-color: var(--green);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    background-color: var(--skyblue);
+  }
+}
+
+@keyframes status-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.85);
+  }
+}
+
+.cursor-dot--click {
+  animation: cursor-dot-pulse 300ms ease-out;
+}
+
+.status-dot {
+  animation: status-pulse 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor-dot--click,
+  .status-dot {
+    animation: none;
+  }
+}

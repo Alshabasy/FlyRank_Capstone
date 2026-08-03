@@ -256,4 +256,4 @@ docs(readme): add deployment instructions
 - [ ] Your work / internship experience details
 - [ ] Certificate names and issuers
 - [ ] Contact email or preferred contact method
-- [ ] Preferred primary accent color (purple, cyan, or custom)
+- [ ] Preferred primary accent color (black, green, yellow, mint, skyblue)
