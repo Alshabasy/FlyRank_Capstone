@@ -7,7 +7,7 @@ This file is the single source of truth for how Claude Code (or any AI assistant
 ## 🧠 Project Context
 
 **Project:** Personal developer portfolio — modern, aesthetic, fully responsive.
-**Owner:** _[Your Name]_ — Front-End Developer, FlyRank Intern.
+**Owner:** _[Amr Alshabasy]_ — Front-End Developer, FlyRank Intern.
 **Goal:** Showcase projects, skills, experience, and certificates in a visually stunning glassmorphism interface.
 **Design language:** Dark-first · Glassmorphism · Gradient-heavy · Smooth animations · Space Grotesk font.
 

@@ -179,4 +179,4 @@ MIT License — see [LICENSE](./LICENSE) for details.
 
 **Your Name**
 Front-End Developer · FlyRank Intern
-[github.com/YOUR_USERNAME](https://github.com/YOUR_USERNAME) · [linkedin.com/in/YOUR_PROFILE](https://linkedin.com/in/YOUR_PROFILE)
+[github.com/Alshabasy](https://github.com/Alshabasy) · [linkedin.com/in/amr-alshabasy](https://www.linkedin.com/in/amr-alshabasy-a7aa90314)
