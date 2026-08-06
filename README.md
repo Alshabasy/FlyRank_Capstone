@@ -177,6 +177,6 @@ MIT License — see [LICENSE](./LICENSE) for details.
 
 ## 👤 Author
 
-**Your Name**
+**Amr Alshabasy**
 Front-End Developer · FlyRank Intern
 [github.com/Alshabasy](https://github.com/Alshabasy) · [linkedin.com/in/amr-alshabasy](https://www.linkedin.com/in/amr-alshabasy-a7aa90314)
