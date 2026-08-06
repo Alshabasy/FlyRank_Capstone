@@ -1,26 +1,26 @@
-# 🚀 Personal Portfolio — FlyRank Capstone
+# 🎬 CineVault — Movie Discovery App
 
-> A modern, aesthetic, and fully responsive personal portfolio built with React.js, Tailwind CSS, and Material UI — featuring glassmorphism design, gradient-heavy visuals, and smooth animations.
-
----
-
-## ✨ Live Demo
-
-🔗 _[soon]_
+> A modern React + Vite movie application for discovering movies, browsing genres, saving favourites, and chatting with an AI movie assistant powered by a free AI SDK integration.
 
 ---
 
-## 📸 Preview
+## ✨ Overview
 
-_[soon]_
+CineVault is a cinematic web app built to deliver a polished movie discovery experience. Users can browse movies, explore categories, view details, save favourites, and ask an AI assistant for recommendations, comparisons, and general movie guidance.
+
+The app combines a clean dark-themed UI with modern React architecture and external APIs to create a smooth, engaging experience for movie lovers.
 
 ---
 
-## 🎯 Project Overview
+## 🚀 Features
 
-This is my personal developer portfolio, built as the capstone project for the **FlyRank internship program**. It showcases my projects, skills, experience, and certificates in a visually rich, glassmorphism-styled interface — developed using an AI-assisted workflow with Claude Code.
-
-**Design philosophy:** dark-first, gradient-heavy, glassmorphism cards, smooth scroll animations, and full mobile responsiveness.
+- Browse trending and popular movies
+- Search and discover titles by keyword
+- Explore movies by genre
+- View detailed movie information
+- Save favourite movies to a personal watchlist
+- Chat with an AI movie assistant for recommendations and movie help
+- Responsive design for desktop and mobile
 
 ---
 
@@ -28,66 +28,69 @@ This is my personal developer portfolio, built as the capstone project for the *
 
 | Layer | Technology |
 |---|---|
-| Framework | React.js (Vite) |
-| Markup | HTML5 (semantic) |
-| Styling | Tailwind CSS + CSS3 |
-| UI Components | Material UI (MUI v5) |
-| Typography | Google Fonts — Space Grotesk |
-| Interactivity | JavaScript (ES6+) |
-| Animations | CSS keyframes + Framer Motion |
-| AI Assistant | Claude Code |
-| Version Control | Git (Conventional Commits) |
-| Deployment | Vercel / Netlify |
+| Frontend | React 18 + Vite |
+| Routing | React Router DOM |
+| Styling | Tailwind CSS |
+| UI Motion | Framer Motion |
+| Authentication | Firebase Auth |
+| Database | Firestore |
+| Notifications | React Hot Toast |
+| Icons | React Icons |
+| AI Integration | AI SDK + OpenAI-compatible API |
+| APIs | OMDB API |
 
 ---
 
-## 📄 Portfolio Sections
+## 🔌 APIs Used
 
-| # | Section | Description |
-|---|---|---|
-| 1 | **Hero / Landing** | Full-screen intro with name, title, animated gradient background, and CTA buttons |
-| 2 | **About Me** | Personal bio, photo, personality traits, and what I'm currently learning |
-| 3 | **Skills & Tech Stack** | Visual skill cards grouped by category (Frontend, Tools, etc.) |
-| 4 | **Projects Gallery** | Filterable project cards with live demo and GitHub links |
-| 5 | **Experience / Timeline** | Work and internship history in an interactive vertical timeline |
-| 6 | **Certificates & Awards** | Glassmorphism certificate cards with issuer and date |
-| 7 | **Contact Form** | Functional contact form with validation and social links |
+### OMDB API
+- Used to fetch movie search results, metadata, and details.
+- Movies are queried with a movie-only filter to avoid series results.
+
+### Firebase
+- Authentication is handled through Firebase Auth.
+- Favourite movies are stored in Firestore for each signed-in user.
+
+### AI SDK / AI Provider
+- The chatbot uses the AI SDK with an OpenAI-compatible provider.
+- The app is configured to work with a free API key and a free model such as:
+  - inclusionai/ling-3.0-tiny:free
+
+---
+
+## 🤖 AI Chat Assistant
+
+CineVault includes a floating AI assistant called CineBot.
+
+It can help users with:
+- Movie recommendations
+- “Is this worth watching?” style advice
+- Similar movie suggestions
+- Genre-based recommendations
+- General movie-related questions
+
+The assistant is designed to feel native to the app and supports streaming-style responses for a more interactive experience.
 
 ---
 
 ## 📁 Project Structure
 
-```
-flyrank-capstone/
-├── public/
-│   ├── index.html
-│   └── assets/              # Static images, icons, CV PDF
-├── src/
-│   ├── components/
-│   │   ├── Navbar.jsx
-│   │   ├── Hero.jsx
-│   │   ├── About.jsx
-│   │   ├── Skills.jsx
-│   │   ├── Projects.jsx
-│   │   ├── Experience.jsx
-│   │   ├── Certificates.jsx
-│   │   ├── Contact.jsx
-│   │   └── Footer.jsx
-│   ├── pages/
-│   │   └── Home.jsx
-│   ├── styles/
-│   │   └── global.css
-│   ├── utils/
-│   │   └── data.js          # All content data (projects, skills, etc.)
-│   ├── hooks/
-│   │   └── useScrollReveal.js
-│   ├── context/
-│   │   └── ThemeContext.jsx
-│   └── App.jsx
-├── CLAUDE.md
-├── tailwind.config.js
-├── package.json
-└── README.md
+```bash
+src/
+├── components/
+│   ├── auth/
+│   ├── layout/
+│   ├── movie/
+│   ├── ui/
+│   └── chatbot/
+├── context/
+├── firebase/
+├── hooks/
+├── lib/
+├── pages/
+├── styles/
+├── utils/
+└── App.jsx
 ```
 
 ---
@@ -96,24 +99,40 @@ flyrank-capstone/
 
 ### Prerequisites
 
-- Node.js (LTS) — [nodejs.org](https://nodejs.org)
-- Git — [git-scm.com](https://git-scm.com)
+- Node.js (LTS)
+- npm or yarn
 
 ### Installation
 
 ```bash
-# Clone the repository
-git clone https://github.com/YOUR_USERNAME/flyrank-capstone.git
-cd flyrank-capstone
-
-# Install dependencies
+git clone <your-repo-url>
+cd Capstone
 npm install
+```
 
-# Start the dev server
+### Environment Variables
+
+Create a `.env` file in the root of the project and add:
+
+```env
+VITE_OMDB_API_KEY=your_omdb_key
+VITE_FIREBASE_API_KEY=your_firebase_key
+VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+VITE_AI_API_KEY=your_ai_provider_key
+VITE_AI_MODEL=inclusionai/ling-3.0-tiny:free
+```
+
+### Run locally
+
+```bash
 npm run dev
 ```
 
-App runs at `http://localhost:5173`
+Then open: http://localhost:5173
 
 ### Build for production
 
@@ -123,60 +142,24 @@ npm run build
 
 ---
 
-## 🤖 AI-Assisted Development
+## 🧪 Development Notes
 
-This project was built using **Claude Code** as the primary AI development assistant. Key AI-assisted workflows:
-
-- Scaffolding all React components and page structure
-- Writing and auditing Tailwind utility classes for glassmorphism effects
-- Debugging JavaScript and React logic
-- Critiquing and improving this README
-- Generating reusable component patterns
-
-See [`CLAUDE.md`](./CLAUDE.md) for the full instructions given to the AI assistant.
-
----
-
-## 📝 Commit Convention
-
-All commits follow [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/):
-
-```
-type(scope): short description
-```
-
-| Type | When to use |
-|---|---|
-| `feat` | New section or component |
-| `fix` | Bug fix |
-| `docs` | Documentation update |
-| `style` | Visual / CSS / Tailwind change |
-| `refactor` | Code restructure |
-| `chore` | Config, deps, tooling |
-
----
-
-## 🚀 Deployment
-
-This project is deployed on **Vercel** (recommended for React/Vite):
-
-```bash
-npm install -g vercel
-vercel
-```
-
-Or connect your GitHub repo directly on [vercel.com](https://vercel.com) for auto-deploy on every push.
+This project was built with a focus on:
+- modular React component structure
+- clean separation of concerns
+- reusable hooks and utilities
+- scalable UI architecture
+- smooth user experience with animations and transitions
 
 ---
 
 ## 📄 License
 
-MIT License — see [LICENSE](./LICENSE) for details.
+This project is licensed under the MIT License.
 
 ---
 
 ## 👤 Author
 
-**Your Name**
-Front-End Developer · FlyRank Intern
-[github.com/Alshabasy](https://github.com/Alshabasy) · [linkedin.com/in/amr-alshabasy](https://www.linkedin.com/in/amr-alshabasy-a7aa90314)
+Amr Alshabasy
+Software Engineer · FlyRank Intern

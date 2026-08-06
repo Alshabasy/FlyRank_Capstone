@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Toaster } from 'react-hot-toast'
 import { AuthProvider } from './context/AuthContext'
+import { ChatbotProvider } from './context/ChatbotContext'
 import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
 import Home from './pages/Home'
@@ -9,6 +10,8 @@ import Categories from './pages/Categories'
 import Favourites from './pages/Favourites'
 import Login from './pages/Login'
 import MovieDetail from './pages/MovieDetail'
+import { ChatbotButton } from './components/chatbot/ChatbotButton'
+import { ChatPanel } from './components/chatbot/ChatPanel'
 
 function AnimatedRoutes() {
   const location = useLocation()
@@ -64,23 +67,27 @@ function AnimatedRoutes() {
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <div className="min-h-screen bg-cinema-black text-white">
-          <Navbar />
-          <AnimatedRoutes />
-          <Footer />
-          <Toaster
-            position="bottom-right"
-            toastOptions={{
-              style: {
-                background: '#111827',
-                color: '#f8fafc',
-                border: '1px solid #1d4ed8',
-              },
-            }}
-          />
-        </div>
-      </BrowserRouter>
+      <ChatbotProvider>
+        <BrowserRouter>
+          <div className="min-h-screen bg-cinema-black text-white">
+            <Navbar />
+            <AnimatedRoutes />
+            <Footer />
+            <ChatbotButton />
+            <ChatPanel />
+            <Toaster
+              position="bottom-right"
+              toastOptions={{
+                style: {
+                  background: '#111827',
+                  color: '#f8fafc',
+                  border: '1px solid #1d4ed8',
+                },
+              }}
+            />
+          </div>
+        </BrowserRouter>
+      </ChatbotProvider>
     </AuthProvider>
   )
 }
