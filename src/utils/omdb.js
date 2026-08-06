@@ -1,4 +1,4 @@
-const BASE_URL = `https://www.omdbapi.com/?apikey=${import.meta.env.VITE_OMDB_API_KEY}`
+const BASE_URL = `${(import.meta.env.VITE_OMDB_BASE_URL || 'https://www.omdbapi.com').replace('http://', 'https://')}/?apikey=${import.meta.env.VITE_OMDB_API_KEY}`
 
 async function fetchOmdb(url) {
   try {
@@ -27,7 +27,9 @@ export async function searchMovies(query) {
     for (const movie of movies) {
       if (!movie?.Title) continue
       const title = movie.Title.toLowerCase()
-      if (title.includes(lowerQuery) && !seen.has(movie.imdbID)) {
+      const matchesQuery = title.includes(lowerQuery)
+      const matchesCharacter = lowerQuery.split('').some((char) => char.trim() && title.includes(char))
+      if ((matchesQuery || matchesCharacter) && !seen.has(movie.imdbID)) {
         seen.add(movie.imdbID)
         results.push(movie)
       }
@@ -37,20 +39,12 @@ export async function searchMovies(query) {
     }
   }
 
-  const initialData = await fetchOmdb(`${BASE_URL}&s=${encodeURIComponent(trimmedQuery)}&type=movie`)
-  addMatches(initialData?.Search ?? [])
+  const searchTerms = Array.from(new Set([trimmedQuery, ...trimmedQuery.split('').filter((char) => char.trim().length > 0)]))
 
-  if (results.length >= 10) {
-    return results.slice(0, 10)
-  }
-
-  const fallbackTerms = Array.from(
-    new Set(trimmedQuery.split('').filter((char) => char.trim().length > 0).slice(0, 5)),
-  )
-  for (const term of fallbackTerms) {
+  for (const term of searchTerms) {
     if (results.length >= 10) break
-    const fallbackData = await fetchOmdb(`${BASE_URL}&s=${encodeURIComponent(term)}&type=movie`)
-    addMatches(fallbackData?.Search ?? [])
+    const data = await fetchOmdb(`${BASE_URL}&s=${encodeURIComponent(term)}&type=movie`)
+    addMatches(data?.Search ?? [])
   }
 
   return results.slice(0, 10)

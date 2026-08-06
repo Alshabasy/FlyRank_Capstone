@@ -101,7 +101,7 @@ export default function Login() {
       }
       navigate(from, { replace: true })
     } catch (error) {
-      const message = friendlyErrors[error.code] || 'Unable to sign in. Please try again.'
+      const message = friendlyErrors[error?.code] || error?.message || 'Unable to sign in. Please try again.'
       toast.error(message)
     } finally {
       setLoading(false)
@@ -130,7 +130,8 @@ export default function Login() {
       toast.success('Signed in successfully')
       navigate(from, { replace: true })
     } catch (error) {
-      toast.error('Google sign in failed.')
+      const message = friendlyErrors[error?.code] || error?.message || 'Google sign in failed.'
+      toast.error(message)
     } finally {
       setLoading(false)
     }

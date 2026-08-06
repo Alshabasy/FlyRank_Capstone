@@ -21,10 +21,11 @@ export function useFavourites() {
       const favouritesRef = ref(rdb, `favourites/${user.uid}`)
       const snapshot = await get(favouritesRef)
       const data = snapshot.val() || {}
-      const saved = Object.keys(data).map((key) => data[key])
+      const saved = Object.values(data)
       setFavourites(saved)
     } catch (error) {
       setFavourites([])
+      toast.error('Could not load your watchlist.')
     } finally {
       setLoading(false)
     }

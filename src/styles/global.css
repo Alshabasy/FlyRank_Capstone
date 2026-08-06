@@ -5,8 +5,8 @@
 @layer base {
   :root {
     color-scheme: dark;
-    color: #f8fafc;
     background-color: #08080f;
+    color: #f8fafc;
     font-family: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
   }
 
@@ -17,7 +17,7 @@
   html,
   body,
   #root {
-    min-height: 100vh;
+    min-height: 100%;
   }
 
   body {
@@ -42,7 +42,7 @@
   }
 
   ::selection {
-    background: rgba(229, 9, 20, 0.4);
+    background: rgba(229, 9, 20, 0.35);
   }
 
   body::-webkit-scrollbar {

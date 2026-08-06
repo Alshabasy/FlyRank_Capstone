@@ -7,6 +7,8 @@ import {
   onAuthStateChanged,
   GoogleAuthProvider,
   signInWithPopup,
+  setPersistence,
+  browserLocalPersistence,
 } from 'firebase/auth'
 import { auth } from '../firebase/config'
 
@@ -16,26 +18,38 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
 
+  const persistSession = async () => {
+    await setPersistence(auth, browserLocalPersistence)
+  }
+
   const login = async (email, password) => {
-    return signInWithEmailAndPassword(auth, email, password)
+    await persistSession()
+    const result = await signInWithEmailAndPassword(auth, email, password)
+    setUser(result.user)
+    return result
   }
 
   const register = async (email, password, displayName) => {
+    await persistSession()
     const result = await createUserWithEmailAndPassword(auth, email, password)
-    if (auth.currentUser) {
-      await updateProfile(auth.currentUser, { displayName })
-      setUser({ ...auth.currentUser })
+    if (result.user) {
+      await updateProfile(result.user, { displayName })
+      setUser({ ...result.user, displayName })
     }
     return result
   }
 
   const loginWithGoogle = async () => {
+    await persistSession()
     const provider = new GoogleAuthProvider()
-    return signInWithPopup(auth, provider)
+    const result = await signInWithPopup(auth, provider)
+    setUser(result.user)
+    return result
   }
 
   const logout = async () => {
     await signOut(auth)
+    setUser(null)
   }
 
   useEffect(() => {
