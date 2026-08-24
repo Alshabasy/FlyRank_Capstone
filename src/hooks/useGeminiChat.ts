@@ -1,220 +1,329 @@
-import { streamText } from 'ai'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { getChatModel, getFallbackResponse, SYSTEM_PROMPT, type ChatMessage, type ChatState } from '../lib/gemini'
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
+import {
+  AbstractChat,
+  DefaultChatTransport,
+  type ChatInit,
+  type ChatStatus,
+  type UIMessage,
+} from 'ai'
+import { getClientSabotageMode } from '../lib/ai-config'
+import type { CineBotUIMessage } from '../lib/chat-types'
 
-interface UseGeminiChatReturn {
-  messages: ChatMessage[]
-  isThinking: boolean
-  isStreaming: boolean
-  error: string | null
-  sendMessage: (content: string, pageContext?: string) => Promise<void>
-  stopStreaming: () => void
-  clearMessages: () => void
+type ChatErrorKind = 'network' | 'rate-limit' | 'stream' | 'server' | 'unknown'
+
+export type ChatErrorState = {
+  kind: ChatErrorKind
+  message: string
+  retryable: boolean
 }
 
-const initialState: ChatState = {
-  messages: [],
-  isThinking: false,
-  isStreaming: false,
-  error: null,
+interface UseGeminiChatReturn {
+  messages: CineBotUIMessage[]
+  status: ChatStatus
+  isThinking: boolean
+  isStreaming: boolean
+  error: ChatErrorState | null
+  lastFailedUserText: string | null
+  sendMessage: (content: string, pageContext?: string) => Promise<void>
+  retryLast: () => Promise<void>
+  stopStreaming: () => void
+  clearMessages: () => void
+  clearError: () => void
+}
+
+type StoreSnapshot<UI_MESSAGE extends UIMessage> = {
+  messages: UI_MESSAGE[]
+  status: ChatStatus
+  error: Error | undefined
+  version: number
+}
+
+class ReactChat<UI_MESSAGE extends UIMessage> extends AbstractChat<UI_MESSAGE> {
+  #listeners = new Set<() => void>()
+  #getSnapshotInternal: () => StoreSnapshot<UI_MESSAGE>
+
+  constructor(init: ChatInit<UI_MESSAGE>) {
+    const listeners = new Set<() => void>()
+    let messages = init.messages ?? []
+    let status: ChatStatus = 'ready'
+    let error: Error | undefined
+    let version = 0
+    let cached: StoreSnapshot<UI_MESSAGE> = { messages, status, error, version }
+
+    const emit = () => {
+      version += 1
+      cached = { messages, status, error, version }
+      listeners.forEach((listener) => listener())
+    }
+
+    const state = {
+      get status() {
+        return status
+      },
+      set status(value: ChatStatus) {
+        status = value
+        emit()
+      },
+      get error() {
+        return error
+      },
+      set error(value: Error | undefined) {
+        error = value
+        emit()
+      },
+      get messages() {
+        return messages
+      },
+      set messages(value: UI_MESSAGE[]) {
+        messages = value
+        emit()
+      },
+      pushMessage: (message: UI_MESSAGE) => {
+        messages = [...messages, message]
+        emit()
+      },
+      popMessage: () => {
+        messages = messages.slice(0, -1)
+        emit()
+      },
+      replaceMessage: (index: number, message: UI_MESSAGE) => {
+        messages = messages.map((item, itemIndex) => (itemIndex === index ? message : item))
+        emit()
+      },
+      snapshot: <T,>(value: T) => structuredClone(value),
+    }
+
+    super({
+      ...init,
+      state,
+    })
+
+    this.#listeners = listeners
+    this.#getSnapshotInternal = () => cached
+  }
+
+  subscribe = (listener: () => void) => {
+    this.#listeners.add(listener)
+    return () => {
+      this.#listeners.delete(listener)
+    }
+  }
+
+  getSnapshot = () => this.#getSnapshotInternal()
+}
+
+function mapError(error: unknown): ChatErrorState {
+  if (typeof navigator !== 'undefined' && !navigator.onLine) {
+    return {
+      kind: 'network',
+      message: 'You appear to be offline. Check your connection and try again.',
+      retryable: true,
+    }
+  }
+
+  const text = error instanceof Error ? error.message : String(error ?? '')
+  const lower = text.toLowerCase()
+
+  if (lower.includes('429') || lower.includes('rate limit') || lower.includes('too many requests')) {
+    return {
+      kind: 'rate-limit',
+      message: 'Too many requests right now. Please try again in a moment.',
+      retryable: true,
+    }
+  }
+
+  if (lower.includes('network') || lower.includes('failed to fetch') || lower.includes('offline')) {
+    return {
+      kind: 'network',
+      message: 'We could not reach CineBot. Check your connection and try again.',
+      retryable: true,
+    }
+  }
+
+  if (lower.includes('interrupt') || lower.includes('stream') || lower.includes('sabotage')) {
+    return {
+      kind: 'stream',
+      message: 'The response was interrupted. You can retry your last message.',
+      retryable: true,
+    }
+  }
+
+  return {
+    kind: 'unknown',
+    message: 'Something went wrong while talking to CineBot. Please try again.',
+    retryable: true,
+  }
 }
 
 export function useGeminiChat(): UseGeminiChatReturn {
-  const [state, setState] = useState<ChatState>(initialState)
-  const abortControllerRef = useRef<AbortController | null>(null)
+  const pageContextRef = useRef<string | undefined>(undefined)
+  const lastUserTextRef = useRef<string | null>(null)
+  const [uiError, setUiError] = useState<ChatErrorState | null>(null)
+  const [hasFirstToken, setHasFirstToken] = useState(false)
 
-  const appendAssistantMessage = useCallback((content: string) => {
-    setState((prev) => ({
-      ...prev,
-      messages: [
-        ...prev.messages,
-        {
-          id: crypto.randomUUID(),
-          role: 'assistant',
-          content,
-          timestamp: new Date(),
-          isStreaming: true,
+  const chatRef = useRef<ReactChat<CineBotUIMessage> | null>(null)
+
+  if (!chatRef.current) {
+    chatRef.current = new ReactChat<CineBotUIMessage>({
+      transport: new DefaultChatTransport({
+        api: '/api/chat',
+        prepareSendMessagesRequest: ({ messages, id, trigger, messageId, body }) => ({
+          body: {
+            ...body,
+            id,
+            messages,
+            trigger,
+            messageId,
+            pageContext: pageContextRef.current,
+            sabotage: getClientSabotageMode() ?? undefined,
+          },
+        }),
+        fetch: async (input, init) => {
+          try {
+            const response = await fetch(input, init)
+            if (response.status === 429) {
+              throw new Error('429 Too many requests right now. Please try again in a moment.')
+            }
+            if (!response.ok) {
+              const payload = await response.json().catch(() => null) as { message?: string } | null
+              const message =
+                typeof payload?.message === 'string'
+                  ? payload.message
+                  : `Request failed with status ${response.status}`
+              throw new Error(message)
+            }
+            return response
+          } catch (error) {
+            if (error instanceof TypeError) {
+              throw new Error('Network request failed. You may be offline.')
+            }
+            throw error
+          }
         },
-      ],
-    }))
-  }, [])
-
-  const stopStreaming = useCallback(() => {
-    abortControllerRef.current?.abort()
-    setState((prev) => ({
-      ...prev,
-      isStreaming: false,
-      isThinking: false,
-    }))
-  }, [])
-
-  const clearMessages = useCallback(() => {
-    abortControllerRef.current?.abort()
-    setState(initialState)
-  }, [])
-
-  const sendMessage = useCallback(async (content: string, pageContext?: string) => {
-    const trimmedContent = content.trim()
-    if (!trimmedContent) {
-      return
-    }
-
-    const promptWithContext = pageContext
-      ? `[Context: User is currently on the ${pageContext} page]\n${trimmedContent}`
-      : trimmedContent
-
-    abortControllerRef.current?.abort()
-    const controller = new AbortController()
-    abortControllerRef.current = controller
-
-    const userMessage: ChatMessage = {
-      id: crypto.randomUUID(),
-      role: 'user',
-      content: trimmedContent,
-      timestamp: new Date(),
-    }
-
-    setState((prev) => ({
-      ...prev,
-      messages: [...prev.messages, userMessage],
-      isThinking: true,
-      isStreaming: false,
-      error: null,
-    }))
-
-    appendAssistantMessage('')
-
-    try {
-      const model = getChatModel()
-      if (!model) {
-        setState((prev) => ({
-          ...prev,
-          isThinking: false,
-          isStreaming: false,
-          error: 'CineBot is not configured. Add VITE_AI_API_KEY to .env',
-          messages: prev.messages.filter((message) => message.role !== 'assistant' || message.content !== ''),
-        }))
-        return
-      }
-
-      setState((prev) => ({
-        ...prev,
-        isThinking: false,
-        isStreaming: true,
-      }))
-
-      const result = streamText({
-        model,
-        system: SYSTEM_PROMPT,
-        messages: [{ role: 'user', content: promptWithContext }],
-        abortSignal: controller.signal,
-      })
-
-      let streamedContent = ''
-
-      for await (const delta of result.textStream) {
-        if (controller.signal.aborted) {
-          break
+      }),
+      onError: (error) => {
+        setUiError(mapError(error))
+      },
+      onFinish: ({ isAbort, isDisconnect, isError }) => {
+        if (isAbort) {
+          setUiError(null)
+          return
         }
-
-        streamedContent += delta
-
-        setState((prev) => {
-          const updated = [...prev.messages]
-          const last = updated[updated.length - 1]
-          if (last?.role === 'assistant') {
-            last.content = streamedContent
-            last.isStreaming = true
-          }
-          return {
-            ...prev,
-            messages: updated,
-            isThinking: false,
-            isStreaming: true,
-          }
-        })
-      }
-
-      if (!controller.signal.aborted) {
-        setState((prev) => {
-          const updated = [...prev.messages]
-          const last = updated[updated.length - 1]
-          if (last?.role === 'assistant') {
-            last.content = streamedContent
-            last.isStreaming = false
-          }
-          return {
-            ...prev,
-            messages: updated,
-            isStreaming: false,
-            isThinking: false,
-          }
-        })
-      }
-
-      if (!controller.signal.aborted) {
-        setState((prev) => {
-          const updated = [...prev.messages]
-          const last = updated[updated.length - 1]
-          if (last?.role === 'assistant') {
-            last.isStreaming = false
-          }
-          return {
-            ...prev,
-            messages: updated,
-            isStreaming: false,
-            isThinking: false,
-          }
-        })
-      }
-    } catch (error) {
-      if (controller.signal.aborted) {
-        setState((prev) => ({
-          ...prev,
-          isThinking: false,
-          isStreaming: false,
-        }))
-        return
-      }
-
-      const fallbackReply = getFallbackResponse(trimmedContent, pageContext)
-      setState((prev) => {
-        const updated = [...prev.messages]
-        const last = updated[updated.length - 1]
-        if (last?.role === 'assistant') {
-          last.content = fallbackReply
-          last.isStreaming = false
+        if (isDisconnect || isError) {
+          setUiError(mapError(new Error(isDisconnect ? 'stream disconnect' : 'stream error')))
         }
+      },
+    })
+  }
 
-        return {
-          ...prev,
-          messages: updated,
-          isThinking: false,
-          isStreaming: false,
-          error: null,
-        }
-      })
-    }
-  }, [appendAssistantMessage, state.messages])
+  const chat = chatRef.current
+  const snapshot = useSyncExternalStore(chat.subscribe, chat.getSnapshot, chat.getSnapshot)
 
   useEffect(() => {
-    return () => {
-      abortControllerRef.current?.abort()
+    const last = snapshot.messages[snapshot.messages.length - 1]
+    const hasContent =
+      last?.role === 'assistant' &&
+      last.parts.some((part) => {
+        if (part.type === 'text') return part.text.trim().length > 0
+        if (part.type.startsWith('tool-')) return true
+        return false
+      })
+
+    if (snapshot.status === 'submitted') {
+      setHasFirstToken(false)
+    } else if (hasContent) {
+      setHasFirstToken(true)
     }
-  }, [])
+  }, [snapshot.messages, snapshot.status, snapshot.version])
+
+  const sendMessage = useCallback(
+    async (content: string, pageContext?: string) => {
+      const trimmed = content.trim()
+      if (!trimmed) return
+      if (snapshot.status === 'streaming' || snapshot.status === 'submitted') return
+
+      pageContextRef.current = pageContext
+      lastUserTextRef.current = trimmed
+      setUiError(null)
+      setHasFirstToken(false)
+
+      try {
+        await chat.sendMessage({ text: trimmed })
+      } catch (error) {
+        setUiError(mapError(error))
+      }
+    },
+    [chat, snapshot.status],
+  )
+
+  const retryLast = useCallback(async () => {
+    if (snapshot.status === 'streaming' || snapshot.status === 'submitted') return
+
+    const failedText = lastUserTextRef.current
+    setUiError(null)
+
+    try {
+      // Prefer regenerating the failed assistant turn when possible
+      const lastAssistant = [...snapshot.messages].reverse().find((message) => message.role === 'assistant')
+      if (lastAssistant && (chat.error || snapshot.status === 'error' || uiError)) {
+        await chat.regenerate({ messageId: lastAssistant.id })
+        return
+      }
+
+      if (failedText) {
+        await chat.sendMessage({ text: failedText })
+      }
+    } catch (error) {
+      setUiError(mapError(error))
+    }
+  }, [chat, snapshot.messages, snapshot.status, uiError])
+
+  const stopStreaming = useCallback(() => {
+    void chat.stop()
+    setUiError(null)
+  }, [chat])
+
+  const clearMessages = useCallback(() => {
+    void chat.stop()
+    chat.messages = []
+    lastUserTextRef.current = null
+    setUiError(null)
+    setHasFirstToken(false)
+  }, [chat])
+
+  const clearError = useCallback(() => {
+    chat.clearError()
+    setUiError(null)
+  }, [chat])
+
+  const isStreaming = snapshot.status === 'streaming'
+  const isThinking = snapshot.status === 'submitted' || (isStreaming && !hasFirstToken)
 
   return useMemo(
     () => ({
-      messages: state.messages,
-      isThinking: state.isThinking,
-      isStreaming: state.isStreaming,
-      error: state.error,
+      messages: snapshot.messages,
+      status: snapshot.status,
+      isThinking,
+      isStreaming,
+      error: uiError,
+      lastFailedUserText: lastUserTextRef.current,
       sendMessage,
+      retryLast,
       stopStreaming,
       clearMessages,
+      clearError,
     }),
-    [clearMessages, sendMessage, state.error, state.isStreaming, state.isThinking, state.messages, stopStreaming],
+    [
+      clearError,
+      clearMessages,
+      isStreaming,
+      isThinking,
+      retryLast,
+      sendMessage,
+      snapshot.messages,
+      snapshot.status,
+      stopStreaming,
+      uiError,
+    ],
   )
 }
-
-// ✅ src/hooks/useGeminiChat.ts complete

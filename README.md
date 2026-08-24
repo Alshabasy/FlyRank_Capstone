@@ -1,26 +1,12 @@
 # 🎬 CineVault — Movie Discovery App
 
-> A modern React + Vite movie application for discovering movies, browsing genres, saving favourites, and chatting with an AI movie assistant powered by a free AI SDK integration.
+> A modern React + Vite movie application for discovering movies, browsing genres, saving favourites, and chatting with an AI movie assistant (CineBot) with **AI SDK tool calling** and **generative UI**.
 
 ---
 
 ## ✨ Overview
 
-CineVault is a cinematic web app built to deliver a polished movie discovery experience. Users can browse movies, explore categories, view details, save favourites, and ask an AI assistant for recommendations, comparisons, and general movie guidance.
-
-The app combines a clean dark-themed UI with modern React architecture and external APIs to create a smooth, engaging experience for movie lovers.
-
----
-
-## 🚀 Features
-
-- Browse trending and popular movies
-- Search and discover titles by keyword
-- Explore movies by genre
-- View detailed movie information
-- Save favourite movies to a personal watchlist
-- Chat with an AI movie assistant for recommendations and movie help
-- Responsive design for desktop and mobile
+CineVault combines movie browsing (OMDb + Firebase) with a floating AI assistant that can call a real server-side `searchMovies` tool and render structured results as React components.
 
 ---
 
@@ -28,70 +14,72 @@ The app combines a clean dark-themed UI with modern React architecture and exter
 
 | Layer | Technology |
 |---|---|
-| Frontend | React 18 + Vite |
+| Frontend | React 18 + Vite + TypeScript |
 | Routing | React Router DOM |
 | Styling | Tailwind CSS |
-| UI Motion | Framer Motion |
-| Authentication | Firebase Auth |
-| Database | Firestore |
-| Notifications | React Hot Toast |
-| Icons | React Icons |
-| AI Integration | AI SDK + OpenAI-compatible API |
-| APIs | OMDB API |
+| AI | AI SDK v7 (`streamText`, UI message streams) |
+| AI provider | OpenRouter (server-side) |
+| Movie data | OMDb API |
+| Auth / data | Firebase Auth + Realtime Database |
+| Deployment | Vercel (static app + `/api/*` serverless functions) |
 
 ---
 
-## 🔌 APIs Used
+## 🤖 AI Tools
 
-### OMDB API
-- Used to fetch movie search results, metadata, and details.
-- Movies are queried with a movie-only filter to avoid series results.
+### Architecture
 
-### Firebase
-- Authentication is handled through Firebase Auth.
-- Favourite movies are stored in Firestore for each signed-in user.
+1. **Client** — `useGeminiChat` wraps AI SDK `AbstractChat` + `DefaultChatTransport` → `POST /api/chat`
+2. **Server** — `api/chat.js` runs `streamText` with the `searchMovies` tool
+3. **Tool execution** — `api/_lib/search-movies.js` validates with Zod, queries OMDb, normalizes JSON
+4. **Generative UI** — `ChatMessage` renders typed `tool-searchMovies` parts across four states
 
-### AI SDK / AI Provider
-- The chatbot uses the AI SDK with an OpenAI-compatible provider.
-- The app is configured to work with a free API key and a free model such as:
-  - inclusionai/ling-3.0-tiny:free
+### Tool: `searchMovies`
 
----
+**Purpose:** Search OMDb for movie results when the user needs real catalog data.
 
-## 🤖 AI Chat Assistant
+**Defined in:**
+- Server execution: `api/_lib/search-movies.js`
+- Client types: `src/lib/tools/search-movies.ts`
+- Tool registration: `api/chat.js`
 
-CineVault includes a floating AI assistant called CineBot.
+**Input schema:**
 
-It can help users with:
-- Movie recommendations
-- “Is this worth watching?” style advice
-- Similar movie suggestions
-- Genre-based recommendations
-- General movie-related questions
-
-The assistant is designed to feel native to the app and supports streaming-style responses for a more interactive experience.
-
----
-
-## 📁 Project Structure
-
-```bash
-src/
-├── components/
-│   ├── auth/
-│   ├── layout/
-│   ├── movie/
-│   ├── ui/
-│   └── chatbot/
-├── context/
-├── firebase/
-├── hooks/
-├── lib/
-├── pages/
-├── styles/
-├── utils/
-└── App.jsx
+```json
+{
+  "query": "string (required, non-empty)",
+  "page": "integer 1-100 (optional)"
+}
 ```
+
+**Return shape:**
+
+```json
+{
+  "movies": [
+    {
+      "imdbId": "string",
+      "title": "string",
+      "year": "string",
+      "poster": "string | null",
+      "type": "string"
+    }
+  ],
+  "totalResults": 0,
+  "query": "string"
+}
+```
+
+**Failure behavior:**
+
+| Condition | Behavior |
+|-----------|----------|
+| OMDb/network failure | Tool `output-error` → `ToolError` component |
+| Zero results | `MovieSearchResults` empty state (not an error) |
+| Invalid input | HTTP 400 from `/api/search-movies` |
+| Dev sabotage (`trigger-error`, `TOOL_SABOTAGE=true`) | Simulated tool failure for testing |
+
+**Tool UI states:** `input-streaming` · `input-available` · `output-available` · `output-error`
 
 ---
 
@@ -99,67 +87,104 @@ src/
 
 ### Prerequisites
 
-- Node.js (LTS)
-- npm or yarn
+- Node.js LTS
+- npm
 
-### Installation
+### Install & run
 
 ```bash
 git clone <your-repo-url>
 cd Capstone
 npm install
+cp .env.example .env   # fill values locally — never commit .env
+npm run dev            # http://localhost:5173
 ```
 
-### Environment Variables
+Local dev serves `/api/chat` and `/api/search-movies` through the Vite middleware (`vite-api-plugin.js`), using the same handlers deployed on Vercel.
 
-Create a `.env` file in the root of the project and add:
-
-```env
-VITE_OMDB_API_KEY=your_omdb_key
-VITE_FIREBASE_API_KEY=your_firebase_key
-VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
-VITE_FIREBASE_PROJECT_ID=your_project_id
-VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket
-VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-VITE_FIREBASE_APP_ID=your_app_id
-VITE_AI_API_KEY=your_ai_provider_key
-VITE_AI_MODEL=inclusionai/ling-3.0-tiny:free
-```
-
-### Run locally
-
-```bash
-npm run dev
-```
-
-Then open: http://localhost:5173
-
-### Build for production
+### Build
 
 ```bash
 npm run build
+npm run preview
 ```
 
 ---
 
-## 🧪 Development Notes
+## 🔐 Environment variables (names only)
 
-This project was built with a focus on:
-- modular React component structure
-- clean separation of concerns
-- reusable hooks and utilities
-- scalable UI architecture
-- smooth user experience with animations and transitions
+**Client (Vite):**
+
+- `VITE_OMDB_API_KEY`, `VITE_OMDB_BASE_URL`
+- `VITE_FIREBASE_*`
+- `VITE_AI_API_KEY` (local dev fallback read by server routes if `AI_API_KEY` unset)
+- `VITE_AI_MODEL` (optional)
+
+**Server (preferred in production — set in Vercel dashboard):**
+
+- `AI_API_KEY` or `OPENROUTER_API_KEY`
+- `AI_MODEL` (default: `openrouter/free`)
+- `OMDB_API_KEY`, `OMDB_BASE_URL`
+
+**Development sabotage (never enable in production):**
+
+- `VITE_CHAT_SABOTAGE=rate-limit` — force HTTP 429 from chat route
+- `VITE_CHAT_SABOTAGE=stream-fail` — partial stream then error
+- `TEST_RATE_LIMIT=true` — server-side 429 for all chat requests
+- `TOOL_SABOTAGE=true` — force all tool executions to fail
+- Reserved query `trigger-error` — single tool failure
+
+Disable sabotage: remove/unset all flags above and restart the dev server.
+
+---
+
+## 🧪 Sabotage testing commands
+
+```bash
+# Rate limit
+VITE_CHAT_SABOTAGE=rate-limit npm run dev
+
+# Mid-stream failure
+VITE_CHAT_SABOTAGE=stream-fail npm run dev
+
+# Tool failure via env
+TOOL_SABOTAGE=true npm run dev
+
+# Tool failure via query (in chat)
+Find movies trigger-error
+
+# Server-side search API direct test
+curl -X POST http://localhost:5173/api/search-movies \
+  -H 'Content-Type: application/json' \
+  -d '{"query":"inception"}'
+```
+
+See `docs/FAILURE-INVENTORY.md` for the full failure matrix.
+
+---
+
+## 📁 Relevant files
+
+| Area | Path |
+|------|------|
+| Chat API | `api/chat.js` |
+| Search API | `api/search-movies.js` |
+| Tool + OMDb | `api/_lib/search-movies.js` |
+| AI prompt/config | `api/_lib/ai-config.js`, `src/lib/ai-config.ts` |
+| Chat hook | `src/hooks/useGeminiChat.ts` |
+| Tool UI | `src/components/chatbot/SearchMoviesToolView.tsx` |
+| Results UI | `src/components/chatbot/MovieSearchResults.tsx` |
+| Error UI | `src/components/chatbot/ToolError.tsx` |
+| Chat shell | `src/components/chatbot/ChatPanel.tsx` |
+| Local API middleware | `vite-api-plugin.js` |
+| Vercel routing | `vercel.json` |
 
 ---
 
 ## 📄 License
 
-This project is licensed under the MIT License.
-
----
+MIT — see [LICENSE](LICENSE).
 
 ## 👤 Author
 
 Amr Alshabasy
-Software Engineer · FlyRank Intern

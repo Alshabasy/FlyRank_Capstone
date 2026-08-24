@@ -12,6 +12,7 @@ import Login from './pages/Login'
 import MovieDetail from './pages/MovieDetail'
 import { ChatbotButton } from './components/chatbot/ChatbotButton'
 import { ChatPanel } from './components/chatbot/ChatPanel'
+import { AppErrorBoundary } from './components/ui/AppErrorBoundary'
 
 function AnimatedRoutes() {
   const location = useLocation()
@@ -66,29 +67,35 @@ function AnimatedRoutes() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <ChatbotProvider>
-        <BrowserRouter>
-          <div className="min-h-screen bg-cinema-black text-white">
-            <Navbar />
-            <AnimatedRoutes />
-            <Footer />
-            <ChatbotButton />
-            <ChatPanel />
-            <Toaster
-              position="bottom-right"
-              toastOptions={{
-                style: {
-                  background: '#111827',
-                  color: '#f8fafc',
-                  border: '1px solid #1d4ed8',
-                },
-              }}
-            />
-          </div>
-        </BrowserRouter>
-      </ChatbotProvider>
-    </AuthProvider>
+    <AppErrorBoundary>
+      <AuthProvider>
+        <ChatbotProvider>
+          <BrowserRouter>
+            <div className="min-h-screen bg-cinema-black text-white">
+              <Navbar />
+              <AppErrorBoundary fallbackTitle="This page failed to load">
+                <AnimatedRoutes />
+              </AppErrorBoundary>
+              <Footer />
+              <ChatbotButton />
+              <AppErrorBoundary fallbackTitle="CineBot hit an error">
+                <ChatPanel />
+              </AppErrorBoundary>
+              <Toaster
+                position="bottom-right"
+                toastOptions={{
+                  style: {
+                    background: '#111827',
+                    color: '#f8fafc',
+                    border: '1px solid #1d4ed8',
+                  },
+                }}
+              />
+            </div>
+          </BrowserRouter>
+        </ChatbotProvider>
+      </AuthProvider>
+    </AppErrorBoundary>
   )
 }
 
