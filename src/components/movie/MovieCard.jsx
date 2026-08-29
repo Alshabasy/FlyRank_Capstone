@@ -41,7 +41,9 @@ export default function MovieCard({ movie, showRemove, saved = false, onToggleFa
           <img
             src={movie.Poster}
             alt={movie.Title}
-            className="h-[320px] w-full object-cover"
+            width="300"
+            height="450"
+            className="h-[320px] w-full object-cover aspect-[2/3]"
             loading="lazy"
           />
         ) : (

@@ -14,6 +14,8 @@ import { ChatbotButton } from './components/chatbot/ChatbotButton'
 import { ChatPanel } from './components/chatbot/ChatPanel'
 import { AppErrorBoundary } from './components/ui/AppErrorBoundary'
 
+import ButtonDemoPage from './pages/ButtonDemoPage'
+
 function AnimatedRoutes() {
   const location = useLocation()
 
@@ -41,6 +43,14 @@ function AnimatedRoutes() {
           element={
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>
               <Favourites />
+            </motion.div>
+          }
+        />
+        <Route
+          path="/demo"
+          element={
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>
+              <ButtonDemoPage />
             </motion.div>
           }
         />

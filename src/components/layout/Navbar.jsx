@@ -9,6 +9,7 @@ const navItems = [
   { label: 'Home', to: '/' },
   { label: 'Categories', to: '/categories' },
   { label: 'Favourites', to: '/favourites' },
+  { label: 'Demo Showcase', to: '/demo' },
 ]
 
 export default function Navbar() {

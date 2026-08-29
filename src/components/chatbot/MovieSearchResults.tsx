@@ -71,8 +71,8 @@ export function MovieSearchResults({ movies, totalResults, query, onTryExample }
         </p>
       </header>
       <ul className="grid max-h-72 grid-cols-1 gap-2 overflow-y-auto p-3 sm:grid-cols-1">
-        {movies.map((movie) => (
-          <li key={movie.imdbId}>
+        {movies.map((movie, index) => (
+          <li key={movie.imdbId || index}>
             <article className="flex gap-3 rounded-lg border border-white/10 bg-cinema-dark/60 p-2">
               <Poster poster={movie.poster} />
               <div

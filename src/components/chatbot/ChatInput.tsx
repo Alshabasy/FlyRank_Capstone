@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { motion } from 'framer-motion'
-import { RiSendPlaneLine, RiStopCircleLine } from 'react-icons/ri'
+import { BrainButton } from '../ui/BrainButton'
 
 interface ChatInputProps {
   onSend: (content: string, pageContext?: string) => Promise<void>
@@ -47,34 +46,28 @@ export function ChatInput({ onSend, onStop, isStreaming, isThinking, disabled = 
         placeholder="Ask about any movie..."
         disabled={disabled}
         aria-label="Message CineBot"
-        className="min-h-[48px] w-full resize-none rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-cinema-white outline-none placeholder:text-cinema-muted focus:border-cinema-blue"
+        className="min-h-[48px] w-full resize-none rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-cinema-white outline-none placeholder:text-cinema-muted focus:border-cinema-blue focus:ring-2 focus:ring-cinema-blue/40 transition-all"
       />
       <div className="mt-2 flex items-center justify-between gap-2">
         <p className={`text-xs text-cinema-muted ${value.length > 800 ? 'block' : 'hidden'}`}>{value.length} / 1000</p>
-        {isStreaming || isThinking ? (
-          <motion.button
-            type="button"
-            whileTap={{ scale: 0.92 }}
-            onClick={onStop}
-            aria-label="Stop generating"
-            className="flex items-center gap-2 rounded-full border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm font-medium text-red-400"
-          >
-            <RiStopCircleLine size={16} />
-            <span>Stop</span>
-          </motion.button>
-        ) : (
-          <motion.button
-            type="button"
-            whileTap={{ scale: 0.92 }}
-            onClick={handleSubmit}
-            aria-label="Send message"
-            disabled={disabled || !value.trim()}
-            className="flex items-center gap-2 rounded-full bg-cinema-red px-3 py-2 text-sm font-medium text-cinema-white disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            <RiSendPlaneLine size={16} />
-            <span>Send</span>
-          </motion.button>
-        )}
+        <div className="ml-auto">
+          {isStreaming || isThinking ? (
+            <BrainButton
+              actionType="stop"
+              onClick={onStop}
+              variant="danger"
+              aria-label="Stop generating response"
+            />
+          ) : (
+            <BrainButton
+              actionType="send"
+              onClick={handleSubmit}
+              disabled={disabled || !value.trim()}
+              variant="primary"
+              aria-label="Send message to CineBot"
+            />
+          )}
+        </div>
       </div>
     </div>
   )
