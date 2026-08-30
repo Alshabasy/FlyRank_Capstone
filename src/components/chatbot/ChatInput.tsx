@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { BrainButton } from '../ui/BrainButton'
 
+const MAX_INPUT_LENGTH = 1500
+
 interface ChatInputProps {
   onSend: (content: string, pageContext?: string) => Promise<void>
   onStop: () => void
@@ -14,9 +16,12 @@ export function ChatInput({ onSend, onStop, isStreaming, isThinking, disabled = 
   const [value, setValue] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
+  const tooLong = value.length > MAX_INPUT_LENGTH
+  const isOverSoftLimit = value.length > MAX_INPUT_LENGTH * 0.8
+
   const handleSubmit = async () => {
     const trimmed = value.trim()
-    if (!trimmed || disabled) {
+    if (!trimmed || disabled || tooLong) {
       return
     }
 
@@ -41,15 +46,23 @@ export function ChatInput({ onSend, onStop, isStreaming, isThinking, disabled = 
       <textarea
         ref={textareaRef}
         value={value}
+        maxLength={MAX_INPUT_LENGTH}
         onChange={(event) => setValue(event.target.value)}
         onKeyDown={handleKeyDown}
         placeholder="Ask about any movie..."
         disabled={disabled}
         aria-label="Message CineBot"
-        className="min-h-[48px] w-full resize-none rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-cinema-white outline-none placeholder:text-cinema-muted focus:border-cinema-blue focus:ring-2 focus:ring-cinema-blue/40 transition-all"
+        aria-invalid={tooLong}
+        className={`min-h-[48px] w-full resize-none rounded-xl border bg-white/5 px-4 py-3 text-sm text-cinema-white outline-none placeholder:text-cinema-muted transition-all ${
+          tooLong
+            ? 'border-cinema-red focus:border-cinema-red focus:ring-2 focus:ring-cinema-red/40'
+            : 'border-white/10 focus:border-cinema-blue focus:ring-2 focus:ring-cinema-blue/40'
+        }`}
       />
       <div className="mt-2 flex items-center justify-between gap-2">
-        <p className={`text-xs text-cinema-muted ${value.length > 800 ? 'block' : 'hidden'}`}>{value.length} / 1000</p>
+        <p className={`text-xs ${tooLong ? 'text-cinema-red' : isOverSoftLimit ? 'text-cinema-muted' : 'text-cinema-muted/70'}`}>
+          {value.length} / {MAX_INPUT_LENGTH}
+        </p>
         <div className="ml-auto">
           {isStreaming || isThinking ? (
             <BrainButton
@@ -62,7 +75,7 @@ export function ChatInput({ onSend, onStop, isStreaming, isThinking, disabled = 
             <BrainButton
               actionType="send"
               onClick={handleSubmit}
-              disabled={disabled || !value.trim()}
+              disabled={disabled || !value.trim() || tooLong}
               variant="primary"
               aria-label="Send message to CineBot"
             />

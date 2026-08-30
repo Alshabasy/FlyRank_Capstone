@@ -10,17 +10,30 @@ import {
 } from 'ai'
 import { SYSTEM_PROMPT, MODEL_CONFIG, resolveAiApiKey, resolveChatModel, isDevSabotageAllowed } from './_lib/ai-config.js'
 import { executeSearchMovies, SearchMoviesSchema } from './_lib/search-movies.js'
+import { checkRateLimit, makeRateLimitedResponse, applyRateLimitHeaders } from './_lib/rate-limit.js'
+import {
+  ChatRequestSchema,
+  validateUserMessageLengths,
+  MAX_USER_MESSAGE_LENGTH,
+  MAX_MESSAGES_IN_CONTEXT,
+  MAX_PAGE_CONTEXT_LENGTH,
+} from './_lib/chat-validation.js'
 
 export const config = {
   runtime: 'nodejs',
   maxDuration: 60,
 }
 
-function json(status, body) {
-  return new Response(JSON.stringify(body), {
+const RATE_LIMIT_MAX = 25
+const RATE_LIMIT_INFO = { maxRequests: RATE_LIMIT_MAX }
+
+function json(status, body, rateInfo) {
+  const response = new Response(JSON.stringify(body), {
     status,
     headers: { 'Content-Type': 'application/json' },
   })
+  if (rateInfo) applyRateLimitHeaders(response, rateInfo)
+  return response
 }
 
 const searchMoviesTool = tool({
@@ -43,36 +56,63 @@ export default async function handler(request) {
   }
 
   if (request.method !== 'POST') {
-    return json(405, { message: 'Method not allowed' })
+    return json(405, { message: 'Method not allowed' }, RATE_LIMIT_INFO)
   }
+
+  const rl = checkRateLimit(request, { maxRequests: RATE_LIMIT_MAX })
+  if (!rl.allowed) {
+    return makeRateLimitedResponse({ ...RATE_LIMIT_INFO, retryAfterMs: rl.retryAfterMs })
+  }
+  const rateInfo = { ...RATE_LIMIT_INFO, used: RATE_LIMIT_MAX }
 
   let body
   try {
-    body = await request.json()
+    const text = await request.text()
+    if (text.length > 32_000) {
+      return json(413, { message: 'Request payload too large' }, rateInfo)
+    }
+    body = JSON.parse(text)
   } catch {
-    return json(400, { message: 'Invalid JSON body' })
+    return json(400, { message: 'Invalid JSON body' }, rateInfo)
   }
 
-  const messages = body?.messages
-  const pageContext = typeof body?.pageContext === 'string' ? body.pageContext : undefined
-  const sabotage = isDevSabotageAllowed() ? body?.sabotage : undefined
+  const parsed = ChatRequestSchema.safeParse(body)
+  if (!parsed.success) {
+    const firstIssue = parsed.error.issues[0]
+    const hint = firstIssue
+      ? firstIssue.code === 'too_big' || firstIssue.code === 'too_small'
+        ? `Field limit exceeded`
+        : 'Request validation failed'
+      : 'Request validation failed'
+    return json(400, { message: hint }, rateInfo)
+  }
 
-  if (!Array.isArray(messages)) {
-    return json(400, { message: 'messages must be an array' })
+  const { messages, pageContext, sabotage: sabotageRaw } = parsed.data
+  const sabotage = isDevSabotageAllowed() ? sabotageRaw : undefined
+
+  if (!validateUserMessageLengths(messages)) {
+    return json(400, {
+      message: `User message exceeds the ${MAX_USER_MESSAGE_LENGTH} character limit`,
+    }, rateInfo)
+  }
+
+  if (messages.length > MAX_MESSAGES_IN_CONTEXT) {
+    return json(400, { message: `Too many messages (max ${MAX_MESSAGES_IN_CONTEXT})` }, rateInfo)
+  }
+
+  if (typeof pageContext === 'string' && pageContext.length > MAX_PAGE_CONTEXT_LENGTH) {
+    return json(400, { message: 'Page context too long' }, rateInfo)
   }
 
   if (sabotage === 'rate-limit' || process.env.TEST_RATE_LIMIT === 'true') {
-    return json(429, {
-      message: 'Too many requests right now. Please try again in a moment.',
-      code: 'RATE_LIMIT',
-    })
+    return makeRateLimitedResponse({ ...RATE_LIMIT_INFO, retryAfterMs: 10_000 })
   }
 
   const apiKey = resolveAiApiKey()
   if (!apiKey) {
     return json(500, {
       message: 'CineBot is not configured. Add AI_API_KEY on the server.',
-    })
+    }, rateInfo)
   }
 
   const openrouter = createOpenAI({
@@ -119,8 +159,11 @@ export default async function handler(request) {
     return createUIMessageStreamResponse({
       stream: toUIMessageStream({ stream: result.stream }),
     })
-  } catch {
-    return json(500, { message: 'Something went wrong while contacting CineBot.' })
+  } catch (err) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('[chat handler error]', err instanceof Error ? err.message : String(err))
+    }
+    return json(500, { message: 'Something went wrong while contacting CineBot.' }, rateInfo)
   }
 }
 
