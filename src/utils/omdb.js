@@ -1,12 +1,18 @@
 const BASE_URL = `${(import.meta.env.VITE_OMDB_BASE_URL || 'https://www.omdbapi.com').replace('http://', 'https://')}/?apikey=${import.meta.env.VITE_OMDB_API_KEY}`
 
+const omdbCache = new Map()
+
 async function fetchOmdb(url) {
+  if (omdbCache.has(url)) {
+    return omdbCache.get(url)
+  }
   try {
     const response = await fetch(url)
     const data = await response.json()
     if (data.Response === 'False') {
       return null
     }
+    omdbCache.set(url, data)
     return data
   } catch (error) {
     return null
@@ -71,17 +77,11 @@ export async function getMoviesByGenre(genre, page = 1) {
 }
 
 export async function getTrendingMovies() {
-  const results = []
-
-  for (const title of ['Inception', 'Interstellar', 'The Dark Knight', 'Dune', 'Oppenheimer']) {
-    const url = `${BASE_URL}&t=${encodeURIComponent(title)}&type=movie`
-    const data = await fetchOmdb(url)
-    if (data) {
-      results.push(data)
-    }
-  }
-
-  return results
+  const titles = ['Inception', 'Interstellar', 'The Dark Knight', 'Dune', 'Oppenheimer']
+  const results = await Promise.all(
+    titles.map((title) => fetchOmdb(`${BASE_URL}&t=${encodeURIComponent(title)}&type=movie`))
+  )
+  return results.filter(Boolean)
 }
 
 // ✅ src/utils/omdb.js complete

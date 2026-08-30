@@ -46,9 +46,10 @@ export default function SearchBar() {
     <div ref={containerRef} className="relative flex items-center">
       <button
         type="button"
-        className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-cinema-dark text-cinema-white transition hover:bg-cinema-red"
+        className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-cinema-dark text-cinema-white transition hover:bg-cinema-red focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cinema-red"
         onClick={() => setOpen((value) => !value)}
         aria-label="Open search"
+        aria-expanded={open}
       >
         <BiSearch className="h-5 w-5" />
       </button>

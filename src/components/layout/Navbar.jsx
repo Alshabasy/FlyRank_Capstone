@@ -44,7 +44,7 @@ export default function Navbar() {
       scrolled ? 'bg-cinema-dark/95 shadow-xl' : 'bg-nav-gradient'
     }`}>
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-        <Link to="/" className="flex items-center gap-2 text-lg font-semibold text-white">
+        <Link to="/" className="flex items-center gap-2 text-lg font-semibold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cinema-red rounded-lg" aria-label="CineVault Homepage">
           <span>🎬</span>
           <span>
             <span className="font-normal">Cine</span>
@@ -52,13 +52,13 @@ export default function Navbar() {
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav aria-label="Main Navigation" className="hidden items-center gap-8 md:flex">
           {navItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
-                `text-sm font-medium transition ${
+                `text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cinema-red rounded-md px-1 py-0.5 ${
                   isActive ? 'text-cinema-red underline decoration-cinema-red underline-offset-4' : 'text-white hover:text-cinema-white'
                 }`
               }

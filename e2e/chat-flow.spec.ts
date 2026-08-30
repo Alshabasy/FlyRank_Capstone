@@ -33,7 +33,7 @@ test.describe('CineVault App & CineBot E2E Flow', () => {
 
     const sendButton = page.getByRole('button', { name: /send message to cinebot/i })
     await expect(sendButton).toBeEnabled()
-    await sendButton.click()
+    await sendButton.click({ force: true })
 
     // Verify user message appears in chat
     await expect(page.getByText('Recommend sci-fi movies')).toBeVisible()

@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense } from 'react'
+import { useState, lazy, Suspense, useEffect } from 'react'
 import { BrainButton, type ButtonActionType, type ButtonState } from '../components/ui/BrainButton'
 import { RiSparklingLine, RiPulseLine, RiSpeedUpLine, RiCheckDoubleLine, RiAlertLine } from 'react-icons/ri'
 
@@ -10,6 +10,10 @@ export default function ButtonDemoPage() {
   const [controlledState, setControlledState] = useState<ButtonState | 'auto'>('auto')
   const [actionType, setActionType] = useState<ButtonActionType>('send')
   const [log, setLog] = useState<string[]>([])
+
+  useEffect(() => {
+    document.title = 'Interactive Demo Showcase — CineVault'
+  }, [])
 
   const addLog = (msg: string) => {
     setLog((prev) => [`[${new Date().toLocaleTimeString()}] ${msg}`, ...prev.slice(0, 7)])

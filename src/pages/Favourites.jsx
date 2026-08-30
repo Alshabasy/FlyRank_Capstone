@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useFavourites } from '../hooks/useFavourites'
 import LoadingSpinner from '../components/ui/LoadingSpinner'
@@ -8,6 +9,10 @@ import { useAuth } from '../context/AuthContext'
 export default function Favourites() {
   const { user } = useAuth()
   const { favourites, loading, removeFavourite } = useFavourites()
+
+  useEffect(() => {
+    document.title = 'My Watchlist — CineVault'
+  }, [])
 
   return (
     <ProtectedRoute>

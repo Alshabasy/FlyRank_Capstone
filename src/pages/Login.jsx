@@ -33,6 +33,10 @@ export default function Login() {
   const [errors, setErrors] = useState({})
 
   useEffect(() => {
+    document.title = mode === 'login' ? 'Sign In — CineVault' : 'Register — CineVault'
+  }, [mode])
+
+  useEffect(() => {
     if (user) {
       navigate(from, { replace: true })
     }

@@ -21,6 +21,9 @@ export default function MovieDetail() {
       setLoading(true)
       const result = await getMovieById(imdbID)
       setMovie(result)
+      if (result?.Title) {
+        document.title = `${result.Title} (${result.Year}) — CineVault`
+      }
       setLoading(false)
     }
 
@@ -64,7 +67,8 @@ export default function MovieDetail() {
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-cinema-dark/90 px-4 py-2 text-sm text-white transition hover:bg-white/5"
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-cinema-dark/90 px-4 py-2 text-sm text-white transition hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cinema-blue"
+            aria-label="Go back to previous page"
           >
             <RiArrowLeftSLine className="h-5 w-5" /> Back
           </button>
@@ -72,7 +76,7 @@ export default function MovieDetail() {
           <div className="grid w-full gap-8 rounded-3xl border border-white/10 bg-cinema-dark/95 p-6 shadow-cinema lg:grid-cols-[320px_1fr] lg:p-8">
             <div className="overflow-hidden rounded-3xl bg-black">
               {movie.Poster && movie.Poster !== 'N/A' ? (
-                <img src={movie.Poster} alt={movie.Title} className="h-full w-full object-cover" loading="lazy" />
+                <img src={movie.Poster} alt={movie.Title} width="320" height="480" className="h-full w-full object-cover aspect-[2/3]" loading="lazy" />
               ) : (
                 <div className="flex h-full items-center justify-center bg-[#111827] text-cinema-muted">No poster available</div>
               )}

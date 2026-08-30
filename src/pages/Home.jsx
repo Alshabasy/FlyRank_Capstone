@@ -22,18 +22,22 @@ export default function Home() {
   const favouriteIds = useMemo(() => new Set(favourites.map((item) => item.imdbID)), [favourites])
 
   useEffect(() => {
+    document.title = 'CineVault — Premium Cinema Hub & AI Assistant'
+  }, [])
+
+  useEffect(() => {
     const loadMovies = async () => {
       setLoading(true)
-      const trendingResults = await getTrendingMovies()
-      setTrending(trendingResults)
-      if (trendingResults.length > 0) {
-        setHeroMovie(trendingResults[0])
-      }
-      const [actionResults, dramaResults, sciFiResults] = await Promise.all([
+      const [trendingResults, actionResults, dramaResults, sciFiResults] = await Promise.all([
+        getTrendingMovies(),
         getMoviesByGenre('Action'),
         getMoviesByGenre('Drama'),
         getMoviesByGenre('Sci-Fi'),
       ])
+      setTrending(trendingResults)
+      if (trendingResults.length > 0) {
+        setHeroMovie(trendingResults[0])
+      }
       setActionMovies(actionResults)
       setDramaMovies(dramaResults)
       setSciFiMovies(sciFiResults)

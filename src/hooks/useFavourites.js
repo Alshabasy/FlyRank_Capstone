@@ -1,8 +1,25 @@
 import { useEffect, useState, useCallback } from 'react'
-import { ref, set, remove, get } from 'firebase/database'
-import { rdb } from '../firebase/config'
 import { useAuth } from '../context/AuthContext'
 import { toast } from 'react-hot-toast'
+
+// Lazily load Firebase Realtime Database
+let firebaseDbPromise = null
+
+function loadFirebaseDb() {
+  if (!firebaseDbPromise) {
+    firebaseDbPromise = Promise.all([
+      import('firebase/database'),
+      import('../firebase/config'),
+    ]).then(([dbModule, configModule]) => ({
+      rdb: configModule.rdb,
+      ref: dbModule.ref,
+      set: dbModule.set,
+      remove: dbModule.remove,
+      get: dbModule.get,
+    }))
+  }
+  return firebaseDbPromise
+}
 
 export function useFavourites() {
   const { user } = useAuth()
@@ -18,8 +35,9 @@ export function useFavourites() {
 
     setLoading(true)
     try {
-      const favouritesRef = ref(rdb, `favourites/${user.uid}`)
-      const snapshot = await get(favouritesRef)
+      const fb = await loadFirebaseDb()
+      const favouritesRef = fb.ref(fb.rdb, `favourites/${user.uid}`)
+      const snapshot = await fb.get(favouritesRef)
       const data = snapshot.val() || {}
       const saved = Object.values(data)
       setFavourites(saved)
@@ -41,8 +59,9 @@ export function useFavourites() {
     }
 
     try {
-      const movieRef = ref(rdb, `favourites/${user.uid}/${movie.imdbID}`)
-      await set(movieRef, {
+      const fb = await loadFirebaseDb()
+      const movieRef = fb.ref(fb.rdb, `favourites/${user.uid}/${movie.imdbID}`)
+      await fb.set(movieRef, {
         imdbID: movie.imdbID,
         Title: movie.Title,
         Year: movie.Year,
@@ -63,8 +82,9 @@ export function useFavourites() {
     }
 
     try {
-      const movieRef = ref(rdb, `favourites/${user.uid}/${imdbID}`)
-      await remove(movieRef)
+      const fb = await loadFirebaseDb()
+      const movieRef = fb.ref(fb.rdb, `favourites/${user.uid}/${imdbID}`)
+      await fb.remove(movieRef)
       toast('Removed from Watchlist')
       await refreshFavourites()
     } catch (error) {

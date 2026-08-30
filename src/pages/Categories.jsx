@@ -28,6 +28,10 @@ export default function Categories() {
   const favouriteIds = useMemo(() => new Set(favourites.map((item) => item.imdbID)), [favourites])
 
   useEffect(() => {
+    document.title = searchTerm ? `Search: ${searchTerm} — CineVault` : `${activeGenre} Movies — CineVault`
+  }, [activeGenre, searchTerm])
+
+  useEffect(() => {
     const load = async () => {
       setLoading(true)
       if (searchTerm) {
