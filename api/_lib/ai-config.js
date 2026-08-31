@@ -54,7 +54,7 @@ export function resolveChatModel() {
   return (
     process.env.AI_MODEL?.trim() ||
     process.env.VITE_AI_MODEL?.trim() ||
-    'z-ai/glm-5.2:free'
+    'google/gemma-4-26b-a4b-it:free'
   )
 }
 

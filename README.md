@@ -98,7 +98,7 @@ npm run lint           # ESLint
 | -------- | -------- | ------- |
 | `AI_API_KEY` | Yes* | OpenRouter API key for streaming chat |
 | `OPENROUTER_API_KEY` | Yes* | Alias accepted if `AI_API_KEY` unset |
-| `AI_MODEL` | No | Model ID (default `z-ai/glm-5.2:free`) |
+| `AI_MODEL` | No | Model ID (default `google/gemma-4-26b-a4b-it:free`) |
 | `OMDB_API_KEY` | Yes | OMDb key for server-side AI tools |
 | `OMDB_BASE_URL` | No | OMDb base URL for tool requests |
 
@@ -142,7 +142,7 @@ Users describe what they want in natural language. CineBot interprets intent, fe
 
 ### Provider & model
 - **Provider:** OpenRouter (server-side proxy)
-- **Default model:** `z-ai/glm-5.2:free` (override via `AI_MODEL`)
+- **Default model:** `google/gemma-4-26b-a4b-it:free` (override via `AI_MODEL`)
 - **SDK:** Vercel AI SDK v7 (`streamText`, `createUIMessageStream`, tool calling)
 
 ### System prompt strategy
