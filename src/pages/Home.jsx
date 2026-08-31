@@ -59,11 +59,11 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-cinema-black text-white">
+    <main className="min-h-screen bg-cinema-black text-cinema-white">
       <section className="relative overflow-hidden">
         <div
           aria-hidden="true"
-          className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,_rgba(29,78,216,0.35),_transparent_55%),radial-gradient(ellipse_at_80%_70%,_rgba(229,9,20,0.25),_transparent_60%),radial-gradient(ellipse_at_50%_100%,_rgba(91,33,182,0.2),_transparent_70%),linear-gradient(180deg,_#08080f_0%,_#0a0e27_50%,_#08080f_100%)]"
+          className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,var(--color-hero-glow-1),transparent_55%),radial-gradient(ellipse_at_80%_70%,var(--color-hero-glow-2),transparent_60%),linear-gradient(180deg,var(--color-background)_0%,var(--color-surface)_50%,var(--color-background)_100%)]"
         />
         <div
           aria-hidden="true"
@@ -76,19 +76,19 @@ export default function Home() {
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-cinema-black/35 via-transparent to-cinema-black/85" aria-hidden="true" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_0%,_rgba(8,8,15,0.35)_80%)]" aria-hidden="true" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_0%,var(--color-background)_80%)] opacity-35" aria-hidden="true" />
         <div className="relative mx-auto flex min-h-[80vh] max-w-7xl items-center px-4 pb-20 pt-24 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center w-full">
-            <div className="lg:col-span-7 max-w-3xl rounded-3xl border border-white/10 bg-cinema-dark/90 p-8 shadow-cinema backdrop-blur-xl">
-              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-cinema-blue">Trending now</p>
-              <h1 className="mt-4 text-4xl font-bold leading-tight text-white sm:text-5xl" style={{ textShadow: '0 2px 16px rgba(0,0,0,0.55), 0 0 1px rgba(0,0,0,0.9)' }}>{heroMovie?.Title ?? 'CineVault'}</h1>
+            <div className="lg:col-span-7 max-w-3xl rounded-3xl border border-theme bg-cinema-dark/90 p-8 shadow-cinema backdrop-blur-xl">
+              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-cinema-red">Trending now</p>
+              <h1 className="mt-4 text-4xl font-bold leading-tight text-cinema-white sm:text-5xl" style={{ textShadow: '0 2px 16px rgba(0,0,0,0.55), 0 0 1px rgba(0,0,0,0.9)' }}>{heroMovie?.Title ?? 'CineVault'}</h1>
               <div className="mt-4 flex flex-wrap items-center gap-3">
-                <span className="rounded-full bg-white/10 px-3 py-2 text-sm font-semibold text-white inline-flex items-center gap-1.5">
+                <span className="rounded-full bg-glass px-3 py-2 text-sm font-semibold text-cinema-white inline-flex items-center gap-1.5">
                   <RiStarFill className="text-yellow-400 h-4 w-4" aria-hidden="true" />
                   {heroMovie?.imdbRating ?? 'N/A'}
                 </span>
                 {heroMovie?.Genre?.split(',').slice(0, 3).map((genre) => (
-                  <span key={genre} className="rounded-full bg-white/10 px-3 py-2 text-sm text-cinema-muted">
+                  <span key={genre} className="rounded-full bg-glass px-3 py-2 text-sm text-cinema-muted">
                     {genre.trim()}
                   </span>
                 ))}
@@ -99,13 +99,13 @@ export default function Home() {
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
                   to={`/movie/${heroMovie?.imdbID ?? ''}`}
-                  className="inline-flex items-center justify-center rounded-2xl bg-cinema-red px-6 py-3 text-sm font-semibold text-white transition hover:bg-cinema-red-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cinema-red"
+                  className="inline-flex items-center justify-center rounded-2xl bg-cinema-red px-6 py-3 text-sm font-semibold text-cinema-white transition hover:bg-cinema-red-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cinema-red"
                 >
                   View Details
                 </Link>
                 <button
                   type="button"
-                  className="inline-flex items-center justify-center rounded-2xl border border-white/10 bg-transparent px-6 py-3 text-sm font-semibold text-white transition hover:border-cinema-blue focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cinema-blue"
+                  className="inline-flex items-center justify-center rounded-2xl border border-theme bg-transparent px-6 py-3 text-sm font-semibold text-cinema-white transition hover:border-cinema-red focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cinema-red"
                 >
                   Watch Trailer
                 </button>
@@ -117,9 +117,9 @@ export default function Home() {
               <div className="relative mx-auto aspect-[2/3] w-full max-w-sm">
                 <div
                   aria-hidden="true"
-                  className="absolute -inset-4 rounded-[2rem] bg-gradient-to-br from-cinema-blue/25 via-cinema-purple/20 to-cinema-red/25 blur-2xl"
+                  className="absolute -inset-4 rounded-[2rem] bg-gradient-to-br from-cinema-red/20 via-cinema-surface-2/30 to-cinema-red/15 blur-2xl"
                 />
-                <div className="relative overflow-hidden rounded-[1.75rem] border border-white/10 shadow-[0_30px_80px_-20px_rgba(229,9,20,0.55)]">
+                <div className="relative overflow-hidden rounded-[1.75rem] border border-theme shadow-[0_30px_80px_-20px_rgba(229,9,20,0.55)]">
                   {heroMovie?.Poster && heroMovie.Poster !== 'N/A' ? (
                     <img
                       src={heroMovie.Poster}
@@ -128,16 +128,17 @@ export default function Home() {
                       width={400}
                       height={600}
                       loading="eager"
+                      fetchPriority="high"
                       decoding="async"
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-cinema-dark to-[#161b29] text-cinema-muted">
+                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-cinema-dark to-cinema-surface-2 text-cinema-muted">
                       <RiFilmLine className="h-20 w-20 opacity-50" aria-hidden="true" />
                     </div>
                   )}
                   <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-cinema-black via-cinema-black/20 to-transparent" aria-hidden="true" />
                   {heroMovie?.Runtime && (
-                    <div className="absolute bottom-4 right-4 rounded-full border border-white/15 bg-black/60 px-3 py-1.5 text-xs font-medium text-cinema-white backdrop-blur">
+                    <div className="absolute bottom-4 right-4 rounded-full border border-theme bg-cinema-black/70 px-3 py-1.5 text-xs font-medium text-cinema-white backdrop-blur">
                       {heroMovie.Runtime}
                     </div>
                   )}

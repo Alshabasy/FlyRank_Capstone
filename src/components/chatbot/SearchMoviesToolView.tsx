@@ -28,7 +28,7 @@ export function SearchMoviesToolView({
     case 'input-streaming':
       return (
         <div
-          className="m-1 flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-cinema-muted"
+          className="m-1 flex items-center gap-2 rounded-xl border border-theme bg-glass px-3 py-2 text-sm text-cinema-muted"
           role="status"
           aria-live="polite"
         >
@@ -39,7 +39,7 @@ export function SearchMoviesToolView({
 
     case 'input-available':
       return (
-        <div className="m-1 rounded-xl border border-white/10 bg-white/5 px-3 py-2" role="status">
+        <div className="m-1 rounded-xl border border-theme bg-glass px-3 py-2" role="status">
           <p className="text-sm font-medium text-cinema-white">Searching movies</p>
           <p className="mt-1 text-xs text-cinema-muted">
             Query: &ldquo;{part.input.query}&rdquo;

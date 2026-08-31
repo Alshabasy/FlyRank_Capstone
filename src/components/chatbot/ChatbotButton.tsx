@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { RiCloseLine, RiRobot2Line } from 'react-icons/ri'
-import { useChatbot } from '../../context/ChatbotContext'
+import { useChatbot } from '../../hooks/useChatbot'
 import { useGeminiChat } from '../../hooks/useGeminiChat'
 
 export function ChatbotButton() {

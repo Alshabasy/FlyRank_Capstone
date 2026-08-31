@@ -14,7 +14,7 @@ function Poster({ poster, alt }: { poster: string | null; alt: string }) {
   if (!poster) {
     return (
       <div
-        className="flex h-24 w-16 flex-none items-center justify-center rounded-sm bg-white/10 text-[10px] text-cinema-muted"
+        className="flex h-24 w-16 flex-none items-center justify-center rounded-sm bg-glass text-[10px] text-cinema-muted"
         aria-hidden="true"
       >
         <RiFilmLine className="h-6 w-6 opacity-60" />
@@ -42,7 +42,7 @@ function Poster({ poster, alt }: { poster: string | null; alt: string }) {
 export function MovieSearchResults({ movies, totalResults, query, onTryExample, onDismissChat }: MovieSearchResultsProps) {
   if (!movies.length) {
     return (
-      <div className="m-1 rounded-xl border border-white/10 bg-white/5 p-4" role="status">
+      <div className="m-1 rounded-xl border border-theme bg-glass p-4" role="status">
         <p className="text-sm font-semibold text-cinema-white">No movies found</p>
         <p className="mt-1 text-sm text-cinema-muted">
           Nothing matched &ldquo;{query}&rdquo;. Try a broader title or different keywords.
@@ -66,8 +66,8 @@ export function MovieSearchResults({ movies, totalResults, query, onTryExample, 
   }
 
   return (
-    <section className="m-1 overflow-hidden rounded-xl border border-white/10 bg-white/5" aria-label="Movie search results">
-      <header className="flex items-center justify-between gap-2 border-b border-white/10 px-3 py-2">
+    <section className="m-1 overflow-hidden rounded-xl border border-theme bg-glass" aria-label="Movie search results">
+      <header className="flex items-center justify-between gap-2 border-b border-theme px-3 py-2">
         <div>
           <p className="text-sm font-semibold text-cinema-white">Movie Results</p>
           <p className="text-xs text-cinema-muted">
@@ -82,12 +82,12 @@ export function MovieSearchResults({ movies, totalResults, query, onTryExample, 
             <Link
               to={`/movie/${movie.imdbId}`}
               onClick={() => onDismissChat?.()}
-              className="group flex gap-3 rounded-lg border border-white/10 bg-cinema-dark/60 p-2 transition hover:border-cinema-blue/60 hover:bg-cinema-dark/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cinema-blue"
+              className="group flex gap-3 rounded-lg border border-theme bg-cinema-dark/60 p-2 transition hover:border-cinema-blue/60 hover:bg-cinema-dark/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cinema-blue"
               aria-label={`Open details for ${movie.title}`}
             >
               <Poster poster={movie.poster} alt={`${movie.title} poster`} />
               <div
-                className="flex h-24 w-16 flex-none items-center justify-center rounded-sm bg-white/10 text-[10px] text-cinema-muted"
+                className="flex h-24 w-16 flex-none items-center justify-center rounded-sm bg-glass text-[10px] text-cinema-muted"
                 hidden
                 aria-hidden="true"
               >

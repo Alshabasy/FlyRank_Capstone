@@ -62,12 +62,12 @@ export default function SearchBar() {
             exit={{ opacity: 0, scale: 0.95, y: -12 }}
             className="absolute right-0 top-12 z-50 w-[320px] rounded-3xl bg-cinema-dark/95 p-4 shadow-cinema"
           >
-            <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-[#111827] px-4 py-2">
+            <div className="flex items-center gap-3 rounded-2xl border border-theme bg-cinema-dark px-4 py-2">
               <BiSearch className="h-5 w-5 text-cinema-muted" />
               <input
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                className="w-full bg-transparent text-sm text-white placeholder:text-cinema-muted focus:outline-none"
+                className="w-full bg-transparent text-sm text-cinema-white placeholder:text-cinema-muted focus:outline-none"
                 placeholder="Search movies..."
                 aria-label="Search movies"
                 autoFocus
@@ -86,7 +86,7 @@ export default function SearchBar() {
                       key={movie.imdbID}
                       type="button"
                       onClick={() => handleResultClick(movie.imdbID)}
-                      className="flex w-full items-center gap-3 rounded-2xl px-3 py-2 text-left transition hover:bg-white/5"
+                      className="flex w-full items-center gap-3 rounded-2xl px-3 py-2 text-left transition hover:bg-glass"
                     >
                       <img
                         src={movie.Poster !== 'N/A' ? movie.Poster : ''}
@@ -95,7 +95,7 @@ export default function SearchBar() {
                         loading="lazy"
                       />
                       <div className="truncate">
-                        <p className="text-sm font-semibold text-white truncate">{movie.Title}</p>
+                        <p className="text-sm font-semibold text-cinema-white truncate">{movie.Title}</p>
                         <p className="text-xs text-cinema-muted">{movie.Year}</p>
                       </div>
                     </button>
@@ -108,7 +108,7 @@ export default function SearchBar() {
               <button
                 type="button"
                 onClick={() => navigate(`/categories?search=${encodeURIComponent(query)}`)}
-                className="mt-4 w-full rounded-2xl bg-cinema-blue px-3 py-2 text-sm font-semibold text-white transition hover:bg-cinema-blue-2"
+                className="mt-4 w-full rounded-2xl bg-cinema-blue px-3 py-2 text-sm font-semibold text-cinema-white transition hover:bg-cinema-blue-2"
               >
                 See all results for "{query}" →
               </button>

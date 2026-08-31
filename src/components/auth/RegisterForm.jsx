@@ -9,7 +9,7 @@ export default function RegisterForm({ formState, errors, onChange, onSubmit, lo
           value={formState.displayName}
           onChange={onChange}
           onBlur={onChange}
-          className="w-full rounded-2xl border border-white/10 bg-[#0f172a] px-4 py-3 text-sm text-white placeholder:text-cinema-muted focus:border-cinema-blue focus:outline-none"
+          className="w-full rounded-2xl border border-theme bg-[#0f172a] px-4 py-3 text-sm text-cinema-white placeholder:text-cinema-muted focus:border-cinema-blue focus:outline-none"
           placeholder="Your name"
           aria-label="Display Name"
         />
@@ -24,7 +24,7 @@ export default function RegisterForm({ formState, errors, onChange, onSubmit, lo
           value={formState.email}
           onChange={onChange}
           onBlur={onChange}
-          className="w-full rounded-2xl border border-white/10 bg-[#0f172a] px-4 py-3 text-sm text-white placeholder:text-cinema-muted focus:border-cinema-blue focus:outline-none"
+          className="w-full rounded-2xl border border-theme bg-[#0f172a] px-4 py-3 text-sm text-cinema-white placeholder:text-cinema-muted focus:border-cinema-blue focus:outline-none"
           placeholder="you@example.com"
           aria-label="Email"
         />
@@ -39,7 +39,7 @@ export default function RegisterForm({ formState, errors, onChange, onSubmit, lo
           value={formState.password}
           onChange={onChange}
           onBlur={onChange}
-          className="w-full rounded-2xl border border-white/10 bg-[#0f172a] px-4 py-3 text-sm text-white placeholder:text-cinema-muted focus:border-cinema-blue focus:outline-none"
+          className="w-full rounded-2xl border border-theme bg-[#0f172a] px-4 py-3 text-sm text-cinema-white placeholder:text-cinema-muted focus:border-cinema-blue focus:outline-none"
           placeholder="Create a password"
           aria-label="Password"
         />
@@ -54,7 +54,7 @@ export default function RegisterForm({ formState, errors, onChange, onSubmit, lo
           value={formState.confirmPassword}
           onChange={onChange}
           onBlur={onChange}
-          className="w-full rounded-2xl border border-white/10 bg-[#0f172a] px-4 py-3 text-sm text-white placeholder:text-cinema-muted focus:border-cinema-blue focus:outline-none"
+          className="w-full rounded-2xl border border-theme bg-[#0f172a] px-4 py-3 text-sm text-cinema-white placeholder:text-cinema-muted focus:border-cinema-blue focus:outline-none"
           placeholder="Confirm password"
           aria-label="Confirm Password"
         />
@@ -64,7 +64,7 @@ export default function RegisterForm({ formState, errors, onChange, onSubmit, lo
       <button
         type="submit"
         disabled={loading}
-        className="w-full rounded-2xl bg-cinema-red px-4 py-3 text-sm font-semibold text-white transition hover:bg-cinema-red-2 disabled:cursor-not-allowed disabled:opacity-60"
+        className="w-full rounded-2xl bg-cinema-red px-4 py-3 text-sm font-semibold text-cinema-white transition hover:bg-cinema-red-2 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {loading ? 'Creating account...' : 'Create Account'}
       </button>

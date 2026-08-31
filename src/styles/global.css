@@ -3,15 +3,43 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
+  :root,
+  .dark {
     color-scheme: dark;
-    background-color: #08080f;
-    color: #f8fafc;
-    font-family: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+    --color-background: #000000;
+    --color-surface: #181818;
+    --color-secondary-surface: #2f2f2f;
+    --color-primary-accent: #e50914;
+    --color-primary-accent-hover: #b8060f;
+    --color-primary-text: #ffffff;
+    --color-secondary-text: #b3b3b3;
+    --color-border: rgb(255 255 255 / 0.12);
+    --color-glass: rgb(255 255 255 / 0.06);
+    --color-glass-hover: rgb(255 255 255 / 0.1);
+    --color-hero-glow-1: rgb(229 9 20 / 0.22);
+    --color-hero-glow-2: rgb(47 47 47 / 0.45);
+    --color-scrollbar-track: #181818;
+    --color-scrollbar-thumb: rgb(255 255 255 / 0.18);
+    --color-selection: rgb(229 9 20 / 0.35);
   }
 
-  * {
-    box-sizing: border-box;
+  .light {
+    color-scheme: light;
+    --color-background: #f5f5f7;
+    --color-surface: #ffffff;
+    --color-secondary-surface: #e4e4e7;
+    --color-primary-accent: #db0510;
+    --color-primary-accent-hover: #b8040d;
+    --color-primary-text: #111111;
+    --color-secondary-text: #6b7280;
+    --color-border: rgb(0 0 0 / 0.1);
+    --color-glass: rgb(0 0 0 / 0.04);
+    --color-glass-hover: rgb(0 0 0 / 0.07);
+    --color-hero-glow-1: rgb(219 5 16 / 0.12);
+    --color-hero-glow-2: rgb(228 228 231 / 0.9);
+    --color-scrollbar-track: #e4e4e7;
+    --color-scrollbar-thumb: rgb(0 0 0 / 0.2);
+    --color-selection: rgb(219 5 16 / 0.2);
   }
 
   html,
@@ -20,13 +48,24 @@
     min-height: 100%;
   }
 
+  html {
+    background-color: var(--color-background);
+    color: var(--color-primary-text);
+    font-family: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
   body {
     margin: 0;
-    background: #08080f;
-    color: #f8fafc;
+    background: var(--color-background);
+    color: var(--color-primary-text);
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
   img {
@@ -42,16 +81,16 @@
   }
 
   ::selection {
-    background: rgba(229, 9, 20, 0.35);
+    background: var(--color-selection);
   }
 
   body::-webkit-scrollbar {
     width: 10px;
-    background: #0b101f;
+    background: var(--color-scrollbar-track);
   }
 
   body::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.12);
+    background: var(--color-scrollbar-thumb);
     border-radius: 9999px;
   }
 }
@@ -62,6 +101,18 @@
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
+  }
+
+  .border-theme {
+    border-color: var(--color-border);
+  }
+
+  .bg-glass {
+    background-color: var(--color-glass);
+  }
+
+  .hover\:bg-glass-hover:hover {
+    background-color: var(--color-glass-hover);
   }
 }
 

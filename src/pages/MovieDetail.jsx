@@ -52,14 +52,14 @@ export default function MovieDetail() {
 
   if (!movie) {
     return (
-      <div className="min-h-screen bg-cinema-black px-4 py-12 text-white sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-cinema-black px-4 py-12 text-cinema-white sm:px-6 lg:px-8">
         <p className="text-center text-cinema-muted">Movie not found.</p>
       </div>
     )
   }
 
   return (
-    <main className="min-h-screen bg-cinema-black text-white">
+    <main className="min-h-screen bg-cinema-black text-cinema-white">
       <div className="relative overflow-hidden pb-24">
         <div className="absolute inset-0 bg-cover bg-center blur-3xl" style={{ backgroundImage: `url(${movie.Poster !== 'N/A' ? movie.Poster : ''})` }} />
         <div className="absolute inset-0 bg-black/80" />
@@ -67,22 +67,22 @@ export default function MovieDetail() {
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-cinema-dark/90 px-4 py-2 text-sm text-white transition hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cinema-blue"
+            className="inline-flex items-center gap-2 rounded-full border border-theme bg-cinema-dark/90 px-4 py-2 text-sm text-cinema-white transition hover:bg-glass focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cinema-blue"
             aria-label="Go back to previous page"
           >
             <RiArrowLeftSLine className="h-5 w-5" /> Back
           </button>
 
-          <div className="grid w-full gap-8 rounded-3xl border border-white/10 bg-cinema-dark/95 p-6 shadow-cinema lg:grid-cols-[320px_1fr] lg:p-8">
+          <div className="grid w-full gap-8 rounded-3xl border border-theme bg-cinema-dark/95 p-6 shadow-cinema lg:grid-cols-[320px_1fr] lg:p-8">
             <div className="overflow-hidden rounded-3xl bg-black">
               {movie.Poster && movie.Poster !== 'N/A' ? (
                 <img src={movie.Poster} alt={movie.Title} width="320" height="480" className="h-full w-full object-cover aspect-[2/3]" loading="lazy" />
               ) : (
-                <div className="flex h-full items-center justify-center bg-[#111827] text-cinema-muted">No poster available</div>
+                <div className="flex h-full items-center justify-center bg-cinema-dark text-cinema-muted">No poster available</div>
               )}
             </div>
 
-            <div className="space-y-6 text-white">
+            <div className="space-y-6 text-cinema-white">
               <div className="space-y-3">
                 <div className="flex items-center gap-3 text-sm text-cinema-muted">
                   <span>{movie.Year}</span>
@@ -92,24 +92,24 @@ export default function MovieDetail() {
                 <h1 className="text-4xl font-semibold">{movie.Title}</h1>
                 <div className="flex flex-wrap gap-2">
                   {movie.Genre?.split(',').map((genre) => (
-                    <span key={genre} className="rounded-full bg-white/10 px-3 py-2 text-sm text-white">
+                    <span key={genre} className="rounded-full bg-glass px-3 py-2 text-sm text-cinema-white">
                       {genre.trim()}
                     </span>
                   ))}
                 </div>
-                <div className="inline-flex items-center gap-2 rounded-full bg-cinema-red px-3 py-2 text-sm font-semibold text-white">
+                <div className="inline-flex items-center gap-2 rounded-full bg-cinema-red px-3 py-2 text-sm font-semibold text-cinema-white">
                   ⭐ {movie.imdbRating ?? 'N/A'}
                 </div>
               </div>
 
-              <div className="space-y-3 rounded-3xl bg-[#111827]/80 p-6">
+              <div className="space-y-3 rounded-3xl bg-cinema-dark/80 p-6">
                 <p className="text-sm text-cinema-muted">Director</p>
-                <p className="text-lg text-white">{movie.Director}</p>
+                <p className="text-lg text-cinema-white">{movie.Director}</p>
                 <p className="text-sm text-cinema-muted">Actors</p>
-                <p className="text-white">{movie.Actors}</p>
+                <p className="text-cinema-white">{movie.Actors}</p>
               </div>
 
-              <div className="space-y-4 rounded-3xl bg-[#111827]/80 p-6">
+              <div className="space-y-4 rounded-3xl bg-cinema-dark/80 p-6">
                 <div className="flex items-center justify-between">
                   <p className="text-sm text-cinema-muted">Plot</p>
                   <button
@@ -120,7 +120,7 @@ export default function MovieDetail() {
                     {expanded ? 'Show less' : 'Read more'}
                   </button>
                 </div>
-                <p className={expanded ? 'text-white' : 'line-clamp-3 text-white'}>{movie.Plot}</p>
+                <p className={expanded ? 'text-cinema-white' : 'line-clamp-3 text-cinema-white'}>{movie.Plot}</p>
               </div>
 
               <div className="flex flex-wrap gap-3">

@@ -6,7 +6,7 @@ export default function MovieRow({ title, movies, linkTo, savedIds = new Set(), 
   return (
     <section className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-white">{title}</h2>
+        <h2 className="text-xl font-semibold text-cinema-white">{title}</h2>
         <Link to={linkTo} className="text-sm font-medium text-cinema-blue transition hover:text-cinema-blue-2">
           See All →
         </Link>

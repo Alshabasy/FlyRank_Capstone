@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom'
 import { RiCloseLine, RiDeleteBin6Line, RiRobot2Line } from 'react-icons/ri'
 import { useAutoScroll } from '../../hooks/useAutoScroll'
 import { useGeminiChat } from '../../hooks/useGeminiChat'
-import { useChatbot } from '../../context/ChatbotContext'
+import { useChatbot } from '../../hooks/useChatbot'
 import { ChatInput } from './ChatInput'
 import { ChatMessage } from './ChatMessage'
 import { JumpToLatestButton } from './JumpToLatestButton'
@@ -96,14 +96,14 @@ export function ChatPanel() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 20 }}
-          className="fixed bottom-24 right-3 z-40 flex w-[calc(100vw-1.5rem)] max-w-[380px] flex-col overflow-hidden rounded-[16px] border border-white/10 bg-cinema-dark shadow-[0_25px_60px_rgba(0,0,0,0.6)] sm:right-6"
+          className="fixed bottom-24 right-3 z-40 flex w-[calc(100vw-1.5rem)] max-w-[380px] flex-col overflow-hidden rounded-[16px] border border-theme bg-cinema-dark shadow-[0_25px_60px_rgba(0,0,0,0.6)] sm:right-6"
           style={{ height: 'min(560px, calc(100dvh - 7rem))' }}
           role="dialog"
           aria-label="CineBot chat panel"
           aria-modal="true"
           ref={panelRef}
         >
-          <div className="flex items-start justify-between border-b border-white/10 px-4 py-3">
+          <div className="flex items-start justify-between border-b border-theme px-4 py-3">
             <div className="flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-cinema-red/20 text-cinema-red">
                 <RiRobot2Line size={18} />
@@ -118,7 +118,7 @@ export function ChatPanel() {
                 type="button"
                 onClick={clearMessages}
                 aria-label="Clear chat"
-                className="rounded-full p-2 text-cinema-muted transition hover:bg-white/10 hover:text-cinema-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cinema-blue"
+                className="rounded-full p-2 text-cinema-muted transition hover:bg-glass hover:text-cinema-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cinema-blue"
               >
                 <RiDeleteBin6Line size={16} />
               </button>
@@ -126,7 +126,7 @@ export function ChatPanel() {
                 type="button"
                 onClick={closeChat}
                 aria-label="Close chat"
-                className="rounded-full p-2 text-cinema-muted transition hover:bg-white/10 hover:text-cinema-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cinema-blue"
+                className="rounded-full p-2 text-cinema-muted transition hover:bg-glass hover:text-cinema-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cinema-blue"
               >
                 <RiCloseLine size={16} />
               </button>

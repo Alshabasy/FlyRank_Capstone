@@ -135,19 +135,19 @@ export function BrainButton({
 
   const getVariantStyles = () => {
     if (currentState === 'success') {
-      return 'bg-emerald-600/90 hover:bg-emerald-600 text-white border-emerald-500/50 shadow-emerald-900/30'
+      return 'bg-emerald-600/90 hover:bg-emerald-600 text-cinema-white border-emerald-500/50 shadow-emerald-900/30'
     }
     if (currentState === 'error') {
-      return 'bg-amber-600/90 hover:bg-amber-600 text-white border-amber-500/50 shadow-amber-900/30'
+      return 'bg-amber-600/90 hover:bg-amber-600 text-cinema-white border-amber-500/50 shadow-amber-900/30'
     }
     if (variant === 'danger' || actionType === 'stop') {
-      return 'bg-red-600/90 hover:bg-red-600 text-white border-red-500/50 shadow-red-900/30'
+      return 'bg-red-600/90 hover:bg-red-600 text-cinema-white border-red-500/50 shadow-red-900/30'
     }
     if (variant === 'secondary') {
-      return 'bg-cinema-dark hover:bg-white/10 text-cinema-white border-white/10 hover:border-cinema-blue/50 shadow-black/40'
+      return 'bg-cinema-dark hover:bg-glass text-cinema-white border-theme hover:border-cinema-blue/50 shadow-black/40'
     }
     // Default primary
-    return 'bg-cinema-red hover:bg-cinema-red-2 text-white border-cinema-red/50 shadow-cinema-red/20'
+    return 'bg-cinema-red hover:bg-cinema-red-2 text-cinema-white border-cinema-red/50 shadow-cinema-red/20'
   }
 
   const isDisabled = disabled || currentState === 'loading'

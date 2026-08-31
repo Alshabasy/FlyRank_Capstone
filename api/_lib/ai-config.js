@@ -54,7 +54,7 @@ export function resolveChatModel() {
   return (
     process.env.AI_MODEL?.trim() ||
     process.env.VITE_AI_MODEL?.trim() ||
-    'openrouter/free'
+    'z-ai/glm-5.2:free'
   )
 }
 

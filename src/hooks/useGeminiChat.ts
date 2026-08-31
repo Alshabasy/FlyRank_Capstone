@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
+import { useCallback, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import {
   AbstractChat,
   DefaultChatTransport,
@@ -8,6 +8,9 @@ import {
 } from 'ai'
 import { getClientSabotageMode } from '../lib/ai-config'
 import type { CineBotUIMessage } from '../lib/chat-types'
+
+/** Mutable page context for the active chat request (single ChatPanel instance). */
+const activePageContext = { value: undefined as string | undefined }
 
 type ChatErrorKind = 'network' | 'rate-limit' | 'stream' | 'server' | 'unknown'
 
@@ -110,6 +113,10 @@ class ReactChat<UI_MESSAGE extends UIMessage> extends AbstractChat<UI_MESSAGE> {
   }
 
   getSnapshot = () => this.#getSnapshotInternal()
+
+  clearAllMessages() {
+    this.messages = []
+  }
 }
 
 function mapError(error: unknown): ChatErrorState {
@@ -156,16 +163,12 @@ function mapError(error: unknown): ChatErrorState {
 }
 
 export function useGeminiChat(): UseGeminiChatReturn {
-  const pageContextRef = useRef<string | undefined>(undefined)
   const lastUserTextRef = useRef<string | null>(null)
   const [uiError, setUiError] = useState<ChatErrorState | null>(null)
-  const [hasFirstToken, setHasFirstToken] = useState(false)
   const [lastFailedUserText, setLastFailedUserText] = useState<string | null>(null)
 
-  const chatRef = useRef<ReactChat<CineBotUIMessage> | null>(null)
-
-  if (!chatRef.current) {
-    chatRef.current = new ReactChat<CineBotUIMessage>({
+  const [chat] = useState(() => {
+    return new ReactChat<CineBotUIMessage>({
       transport: new DefaultChatTransport({
         api: '/api/chat',
         prepareSendMessagesRequest: ({ messages, id, trigger, messageId, body }) => ({
@@ -175,33 +178,33 @@ export function useGeminiChat(): UseGeminiChatReturn {
             messages,
             trigger,
             messageId,
-            pageContext: pageContextRef.current,
+            pageContext: activePageContext.value,
             sabotage: getClientSabotageMode() ?? undefined,
           },
         }),
-        fetch: async (input, init) => {
-          try {
-            const response = await fetch(input, init)
-            if (response.status === 429) {
-              throw new Error('429 Too many requests right now. Please try again in a moment.')
+          fetch: async (input, init) => {
+            try {
+              const response = await fetch(input, init)
+              if (response.status === 429) {
+                throw new Error('429 Too many requests right now. Please try again in a moment.')
+              }
+              if (!response.ok) {
+                const payload = (await response.json().catch(() => null)) as { message?: string } | null
+                const message =
+                  typeof payload?.message === 'string'
+                    ? payload.message
+                    : `Request failed with status ${response.status}`
+                throw new Error(message)
+              }
+              return response
+            } catch (error) {
+              if (error instanceof TypeError) {
+                throw new Error('Network request failed. You may be offline.', { cause: error })
+              }
+              throw error
             }
-            if (!response.ok) {
-              const payload = await response.json().catch(() => null) as { message?: string } | null
-              const message =
-                typeof payload?.message === 'string'
-                  ? payload.message
-                  : `Request failed with status ${response.status}`
-              throw new Error(message)
-            }
-            return response
-          } catch (error) {
-            if (error instanceof TypeError) {
-              throw new Error('Network request failed. You may be offline.')
-            }
-            throw error
-          }
-        },
-      }),
+          },
+        }),
       onError: (error) => {
         setUiError(mapError(error))
       },
@@ -215,27 +218,19 @@ export function useGeminiChat(): UseGeminiChatReturn {
         }
       },
     })
-  }
+  })
 
-  const chat = chatRef.current
   const snapshot = useSyncExternalStore(chat.subscribe, chat.getSnapshot, chat.getSnapshot)
 
-  useEffect(() => {
+  const hasFirstToken = useMemo(() => {
     const last = snapshot.messages[snapshot.messages.length - 1]
-    const hasContent =
-      last?.role === 'assistant' &&
-      last.parts.some((part) => {
-        if (part.type === 'text') return part.text.trim().length > 0
-        if (part.type.startsWith('tool-')) return true
-        return false
-      })
-
-    if (snapshot.status === 'submitted') {
-      setHasFirstToken(false)
-    } else if (hasContent) {
-      setHasFirstToken(true)
-    }
-  }, [snapshot.messages, snapshot.status, snapshot.version])
+    if (!last || last.role !== 'assistant') return false
+    return last.parts.some((part) => {
+      if (part.type === 'text') return part.text.trim().length > 0
+      if (part.type.startsWith('tool-')) return true
+      return false
+    })
+  }, [snapshot.messages])
 
   const sendMessage = useCallback(
     async (content: string, pageContext?: string) => {
@@ -243,11 +238,10 @@ export function useGeminiChat(): UseGeminiChatReturn {
       if (!trimmed) return
       if (snapshot.status === 'streaming' || snapshot.status === 'submitted') return
 
-      pageContextRef.current = pageContext
+      activePageContext.value = pageContext
       lastUserTextRef.current = trimmed
       setLastFailedUserText(trimmed)
       setUiError(null)
-      setHasFirstToken(false)
 
       try {
         await chat.sendMessage({ text: trimmed })
@@ -255,7 +249,7 @@ export function useGeminiChat(): UseGeminiChatReturn {
         setUiError(mapError(error))
       }
     },
-    [chat, snapshot.status, setLastFailedUserText, setUiError, setHasFirstToken],
+    [chat, snapshot.status, setLastFailedUserText, setUiError],
   )
 
   const retryLast = useCallback(async () => {
@@ -287,12 +281,11 @@ export function useGeminiChat(): UseGeminiChatReturn {
 
   const clearMessages = useCallback(() => {
     void chat.stop()
-    chat.messages = []
+    chat.clearAllMessages()
     lastUserTextRef.current = null
     setLastFailedUserText(null)
     setUiError(null)
-    setHasFirstToken(false)
-  }, [chat, setLastFailedUserText, setUiError, setHasFirstToken])
+  }, [chat, setLastFailedUserText, setUiError])
 
   const clearError = useCallback(() => {
     chat.clearError()

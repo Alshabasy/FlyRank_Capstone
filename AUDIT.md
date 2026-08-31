@@ -39,7 +39,7 @@ All four core audit pillars (**Accessibility**, **Performance**, **Best Practice
 | **BrainButton (Send / Stop / Retry)** | ✅ | ✅ | ✅ (`focus-visible:ring-2`) | `aria-busy`, `aria-live="polite"`, disabled pointer locking | PASS |
 | **Movie Card Items** | ✅ | ✅ | ✅ | Explicit image `alt`, `width`, `height`, `aspect-[2/3]` | PASS |
 | **Login / Register Form** | ✅ | ✅ | ✅ | Associated `<label>`s, `aria-label`s, `autoComplete` attributes | PASS |
-| **3D Movie Poster Canvas** | ✅ | ✅ | ✅ | WebGL fallback static card for non-WebGL environments | PASS |
+| **Hero featured poster** | N/A | N/A | N/A | Static image with descriptive `alt`; no WebGL canvas | PASS |
 
 ---
 
@@ -67,10 +67,10 @@ All four core audit pillars (**Accessibility**, **Performance**, **Best Practice
 - Authored Playwright E2E suite covering CineBot chat flow and Demo showcase.
 - Created `.github/workflows/ci.yml` pipeline enforcing lint, build, unit test, and E2E verification.
 
-### D. Code-Split 3D Experience (FE-11)
-- Developed `MoviePoster3D.tsx` utilizing `@react-three/fiber` and `@react-three/drei`.
-- Code-split 3D bundle using `React.lazy()` into a separate dynamic chunk (`dist/assets/MoviePoster3D-*.js`), keeping main entry point lightweight.
-- Added WebGL availability detection with fallback static rendering.
+### D. Lightweight Hero (post-3D removal)
+- Removed `@react-three/fiber`, `@react-three/drei`, `three`, and the WebGL fragment shader hero.
+- Replaced with CSS radial-gradient hero + static featured poster — zero WebGL on the critical path.
+- **Impact:** 66 npm packages removed; no `MoviePoster3D-*.js` or shader chunks in production build.
 
 ### E. Layout Shift (CLS) & Semantic Accessibility (FE-12)
 - Added explicit `width="300"`, `height="450"`, and `aspect-[2/3]` attributes to movie posters to eliminate Cumulative Layout Shift (CLS = 0.000).
@@ -89,7 +89,7 @@ npm test
 
 # Type Check & Production Build
 npm run build
-# Result: 0 errors, dist/assets/MoviePoster3D-*.js chunked cleanly
+# Result: 0 errors, no Three.js/WebGL chunks in dist/
 ```
 
 ---

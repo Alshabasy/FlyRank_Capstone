@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { BiMenu, BiX } from 'react-icons/bi'
 import { useAuth } from '../../context/AuthContext'
 import SearchBar from '../ui/SearchBar'
+import ThemeToggle from '../ui/ThemeToggle'
 
 const navItems = [
   { label: 'Home', to: '/' },
@@ -39,11 +40,11 @@ export default function Navbar() {
   }, [user])
 
   return (
-    <header className={`sticky top-0 z-40 border-b border-white/10 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.06),transparent)] backdrop-blur-2xl transition ${
+    <header className={`sticky top-0 z-40 border-b border-theme bg-glass backdrop-blur-2xl transition ${
       scrolled ? 'bg-cinema-dark/95 shadow-xl' : 'bg-nav-gradient'
     }`}>
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-        <Link to="/" className="flex items-center gap-2 text-lg font-semibold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cinema-red rounded-lg" aria-label="CineVault Homepage">
+        <Link to="/" className="flex items-center gap-2 text-lg font-semibold text-cinema-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cinema-red rounded-lg" aria-label="CineVault Homepage">
           <span>🎬</span>
           <span>
             <span className="font-normal">Cine</span>
@@ -58,7 +59,7 @@ export default function Navbar() {
               to={item.to}
               className={({ isActive }) =>
                 `text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cinema-red rounded-md px-1 py-0.5 ${
-                  isActive ? 'text-cinema-red underline decoration-cinema-red underline-offset-4' : 'text-white hover:text-cinema-white'
+                  isActive ? 'text-cinema-red underline decoration-cinema-red underline-offset-4' : 'text-cinema-white hover:text-cinema-muted'
                 }`
               }
             >
@@ -67,14 +68,15 @@ export default function Navbar() {
           ))}
         </nav>
 
-        <div className="hidden items-center gap-4 md:flex">
+        <div className="hidden items-center gap-3 md:flex">
+          <ThemeToggle />
           <SearchBar />
           {user ? (
             <div className="relative">
               <button
                 type="button"
                 onClick={() => setDropdownOpen((value) => !value)}
-                className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-cinema-red text-sm font-semibold text-white"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-cinema-red text-sm font-semibold text-cinema-white"
                 aria-label="Open user menu"
               >
                 {initials}
@@ -85,7 +87,7 @@ export default function Navbar() {
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="absolute right-0 mt-2 w-48 rounded-3xl border border-white/10 bg-cinema-dark p-3 shadow-cinema"
+                    className="absolute right-0 mt-2 w-48 rounded-3xl border border-theme bg-cinema-dark p-3 shadow-cinema"
                   >
                     <button
                       type="button"
@@ -93,7 +95,7 @@ export default function Navbar() {
                         setDropdownOpen(false)
                         navigate('/favourites')
                       }}
-                      className="w-full rounded-2xl px-3 py-2 text-left text-sm text-white transition hover:bg-white/5"
+                      className="w-full rounded-2xl px-3 py-2 text-left text-sm text-cinema-white transition hover:bg-glass-hover"
                     >
                       My Watchlist
                     </button>
@@ -103,7 +105,7 @@ export default function Navbar() {
                         await logout()
                         setDropdownOpen(false)
                       }}
-                      className="mt-2 w-full rounded-2xl px-3 py-2 text-left text-sm text-white transition hover:bg-white/5"
+                      className="mt-2 w-full rounded-2xl px-3 py-2 text-left text-sm text-cinema-white transition hover:bg-glass"
                     >
                       Sign Out
                     </button>
@@ -114,7 +116,7 @@ export default function Navbar() {
           ) : (
             <Link
               to="/login"
-              className="rounded-2xl bg-cinema-blue px-4 py-2 text-sm font-semibold text-white transition hover:bg-cinema-blue-2"
+              className="rounded-2xl bg-cinema-red px-4 py-2 text-sm font-semibold text-cinema-white transition hover:bg-cinema-red-2"
             >
               Sign In
             </Link>
@@ -123,7 +125,7 @@ export default function Navbar() {
 
         <button
           type="button"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-cinema-dark text-white md:hidden"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-theme bg-cinema-dark text-cinema-white md:hidden"
           onClick={() => setOpenMenu(true)}
           aria-label="Open menu"
         >
@@ -140,12 +142,15 @@ export default function Navbar() {
             className="fixed inset-0 z-50 bg-cinema-dark/95 px-6 py-8 backdrop-blur-2xl md:hidden"
           >
             <div className="flex items-center justify-between">
-              <Link to="/" className="text-lg font-semibold text-white">
+              <Link to="/" className="text-lg font-semibold text-cinema-white">
                 CineVault
               </Link>
-              <button type="button" onClick={() => setOpenMenu(false)} aria-label="Close menu" className="text-white">
-                <BiX className="h-8 w-8" />
-              </button>
+              <div className="flex items-center gap-2">
+                <ThemeToggle />
+                <button type="button" onClick={() => setOpenMenu(false)} aria-label="Close menu" className="text-cinema-white">
+                  <BiX className="h-8 w-8" />
+                </button>
+              </div>
             </div>
 
             <div className="mt-8 space-y-6">
@@ -154,7 +159,7 @@ export default function Navbar() {
                   key={item.to}
                   to={item.to}
                   onClick={() => setOpenMenu(false)}
-                  className="block rounded-2xl border border-white/10 bg-[#111827] px-4 py-4 text-base font-medium text-white transition hover:border-cinema-red"
+                  className="block rounded-2xl border border-theme bg-cinema-surface-2 px-4 py-4 text-base font-medium text-cinema-white transition hover:border-cinema-red"
                 >
                   {item.label}
                 </Link>
@@ -162,7 +167,7 @@ export default function Navbar() {
             </div>
 
             <div className="mt-8">
-              <div className="rounded-2xl border border-white/10 bg-[#111827] px-4 py-4">
+              <div className="rounded-2xl border border-theme bg-cinema-surface-2 px-4 py-4">
                 <SearchBar />
               </div>
             </div>
@@ -176,7 +181,7 @@ export default function Navbar() {
                       navigate('/favourites')
                       setOpenMenu(false)
                     }}
-                    className="w-full rounded-2xl bg-cinema-red px-4 py-3 text-sm font-semibold text-white transition hover:bg-cinema-red-2"
+                    className="w-full rounded-2xl bg-cinema-red px-4 py-3 text-sm font-semibold text-cinema-white transition hover:bg-cinema-red-2"
                   >
                     My Watchlist
                   </button>
@@ -186,7 +191,7 @@ export default function Navbar() {
                       await logout()
                       setOpenMenu(false)
                     }}
-                    className="w-full rounded-2xl border border-white/10 px-4 py-3 text-sm font-semibold text-white transition hover:border-cinema-blue"
+                    className="w-full rounded-2xl border border-theme px-4 py-3 text-sm font-semibold text-cinema-white transition hover:border-cinema-red"
                   >
                     Sign Out
                   </button>
@@ -195,7 +200,7 @@ export default function Navbar() {
                 <Link
                   to="/login"
                   onClick={() => setOpenMenu(false)}
-                  className="block rounded-2xl bg-cinema-blue px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-cinema-blue-2"
+                  className="block rounded-2xl bg-cinema-red px-4 py-3 text-center text-sm font-semibold text-cinema-white transition hover:bg-cinema-red-2"
                 >
                   Sign In
                 </Link>

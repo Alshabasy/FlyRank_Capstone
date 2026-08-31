@@ -36,7 +36,7 @@ export function MovieDetailsToolView({ part, onRetry, onDismissChat, retryDisabl
     case 'input-streaming':
       return (
         <div
-          className="m-1 flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-cinema-muted"
+          className="m-1 flex items-center gap-2 rounded-xl border border-theme bg-glass px-3 py-2 text-sm text-cinema-muted"
           role="status"
           aria-live="polite"
         >
@@ -47,7 +47,7 @@ export function MovieDetailsToolView({ part, onRetry, onDismissChat, retryDisabl
 
     case 'input-available':
       return (
-        <div className="m-1 rounded-xl border border-white/10 bg-white/5 px-3 py-2" role="status">
+        <div className="m-1 rounded-xl border border-theme bg-glass px-3 py-2" role="status">
           <p className="text-sm font-medium text-cinema-white">Looking up movie details</p>
           <p className="mt-1 text-xs text-cinema-muted">
             {part.input.imdbIds.length} movie{part.input.imdbIds.length === 1 ? '' : 's'}:{' '}
@@ -82,10 +82,10 @@ export function MovieDetailsToolView({ part, onRetry, onDismissChat, retryDisabl
 
       return (
         <section
-          className="m-1 overflow-hidden rounded-xl border border-white/10 bg-white/5"
+          className="m-1 overflow-hidden rounded-xl border border-theme bg-glass"
           aria-label={`Full details for ${output.movies.length} recommended movie${output.movies.length === 1 ? '' : 's'}`}
         >
-          <header className="flex items-center justify-between gap-2 border-b border-white/10 px-3 py-2">
+          <header className="flex items-center justify-between gap-2 border-b border-theme px-3 py-2">
             <div>
               <p className="text-sm font-semibold text-cinema-white">
                 {output.movies.length} Recommendation{output.movies.length === 1 ? '' : 's'} · Full Details
@@ -100,7 +100,7 @@ export function MovieDetailsToolView({ part, onRetry, onDismissChat, retryDisabl
                 <Link
                   to={`/movie/${movie.imdbId}`}
                   onClick={() => onDismissChat?.()}
-                  className="group block rounded-lg border border-white/10 bg-cinema-dark/70 p-3 transition hover:border-cinema-blue/60 hover:bg-cinema-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cinema-blue"
+                  className="group block rounded-lg border border-theme bg-cinema-dark/70 p-3 transition hover:border-cinema-blue/60 hover:bg-cinema-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cinema-blue"
                   aria-label={`Open details for ${movie.title} — rated ${movie.rating}`}
                 >
                   <div className="flex gap-3">
@@ -115,7 +115,7 @@ export function MovieDetailsToolView({ part, onRetry, onDismissChat, retryDisabl
                           height={112}
                         />
                       ) : (
-                        <div className="flex h-28 w-20 items-center justify-center rounded bg-white/10">
+                        <div className="flex h-28 w-20 items-center justify-center rounded bg-glass">
                           <RiFilmLine className="h-8 w-8 text-cinema-muted" aria-hidden="true" />
                         </div>
                       )}

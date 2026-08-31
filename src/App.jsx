@@ -99,7 +99,7 @@ export default function App() {
       <AuthProvider>
         <ChatbotProvider>
           <BrowserRouter>
-            <div className="min-h-screen bg-cinema-black text-white">
+            <div className="min-h-screen bg-cinema-black text-cinema-white">
               <Navbar />
               <AppErrorBoundary fallbackTitle="This page failed to load">
                 <AnimatedRoutes />
@@ -117,9 +117,9 @@ export default function App() {
                 position="bottom-right"
                 toastOptions={{
                   style: {
-                    background: '#111827',
-                    color: '#f8fafc',
-                    border: '1px solid #1d4ed8',
+                    background: 'var(--color-surface)',
+                    color: 'var(--color-primary-text)',
+                    border: '1px solid var(--color-border)',
                   },
                 }}
               />

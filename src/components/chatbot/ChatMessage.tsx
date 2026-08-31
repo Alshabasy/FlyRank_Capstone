@@ -82,7 +82,7 @@ export function ChatMessage({
             className={`rounded-2xl px-4 py-3 text-sm leading-6 ${
               isUser
                 ? 'bg-gradient-to-r from-cinema-red to-cinema-blue text-cinema-white'
-                : 'border border-white/10 bg-white/5 text-cinema-white'
+                : 'border border-theme bg-glass text-cinema-white'
             }`}
             style={isUser ? { borderRadius: '16px 16px 4px 16px' } : { borderRadius: '16px 16px 16px 4px' }}
           >

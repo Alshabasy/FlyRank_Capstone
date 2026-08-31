@@ -9,7 +9,7 @@ export default function LoginForm({ formState, errors, onChange, onSubmit, onFor
           value={formState.email}
           onChange={onChange}
           onBlur={onChange}
-          className="w-full rounded-2xl border border-white/10 bg-[#0f172a] px-4 py-3 text-sm text-white placeholder:text-cinema-muted focus:border-cinema-blue focus:outline-none"
+          className="w-full rounded-2xl border border-theme bg-[#0f172a] px-4 py-3 text-sm text-cinema-white placeholder:text-cinema-muted focus:border-cinema-blue focus:outline-none"
           placeholder="you@example.com"
           aria-label="Email"
         />
@@ -24,7 +24,7 @@ export default function LoginForm({ formState, errors, onChange, onSubmit, onFor
           value={formState.password}
           onChange={onChange}
           onBlur={onChange}
-          className="w-full rounded-2xl border border-white/10 bg-[#0f172a] px-4 py-3 text-sm text-white placeholder:text-cinema-muted focus:border-cinema-blue focus:outline-none"
+          className="w-full rounded-2xl border border-theme bg-[#0f172a] px-4 py-3 text-sm text-cinema-white placeholder:text-cinema-muted focus:border-cinema-blue focus:outline-none"
           placeholder="Enter your password"
           aria-label="Password"
         />
@@ -40,7 +40,7 @@ export default function LoginForm({ formState, errors, onChange, onSubmit, onFor
       <button
         type="submit"
         disabled={loading}
-        className="w-full rounded-2xl bg-cinema-red px-4 py-3 text-sm font-semibold text-white transition hover:bg-cinema-red-2 disabled:cursor-not-allowed disabled:opacity-60"
+        className="w-full rounded-2xl bg-cinema-red px-4 py-3 text-sm font-semibold text-cinema-white transition hover:bg-cinema-red-2 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {loading ? 'Signing in...' : 'Sign In'}
       </button>
@@ -48,7 +48,7 @@ export default function LoginForm({ formState, errors, onChange, onSubmit, onFor
       <button
         type="button"
         onClick={onGoogleSignIn}
-        className="w-full rounded-2xl border border-white/10 bg-transparent px-4 py-3 text-sm font-semibold text-white transition hover:border-cinema-blue"
+        className="w-full rounded-2xl border border-theme bg-transparent px-4 py-3 text-sm font-semibold text-cinema-white transition hover:border-cinema-blue"
       >
         Continue with Google
       </button>

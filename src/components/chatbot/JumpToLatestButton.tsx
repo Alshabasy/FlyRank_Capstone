@@ -15,7 +15,7 @@ export function JumpToLatestButton({ visible, onClick }: JumpToLatestButtonProps
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 8 }}
           onClick={onClick}
-          className="absolute bottom-24 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full border border-white/10 bg-cinema-dark px-3 py-2 text-sm text-cinema-white shadow-lg"
+          className="absolute bottom-24 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full border border-theme bg-cinema-dark px-3 py-2 text-sm text-cinema-white shadow-lg"
         >
           <span>↓</span>
           <span>Jump to latest</span>

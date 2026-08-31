@@ -2,9 +2,18 @@
 <html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
+    <script>
+      (function () {
+        var stored = localStorage.getItem('cinevault-theme')
+        var theme = stored === 'light' || stored === 'dark' ? stored : 'dark'
+        document.documentElement.classList.remove('light', 'dark')
+        document.documentElement.classList.add(theme)
+        document.documentElement.style.colorScheme = theme
+      })()
+    </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#090d16" />
+    <meta name="theme-color" content="#000000" />
 
     <!-- Preconnect to critical origins for faster first requests -->
     <link rel="preconnect" href="https://www.omdbapi.com" crossorigin />
@@ -18,9 +27,9 @@
     <title>CineVault — Premium Cinema Hub & AI Assistant</title>
     <meta
       name="description"
-      content="Discover trending movies, explore curated genres, interact with CineBot AI Assistant for smart recommendations, and experience 3D movie showcases on CineVault."
+      content="Discover trending movies, explore curated genres, and get AI-powered recommendations from CineBot on CineVault."
     />
-    <meta name="keywords" content="movies, cinema, streaming, AI movie recommendations, CineBot, 3D movie showcase, watchlist" />
+    <meta name="keywords" content="movies, cinema, streaming, AI movie recommendations, CineBot, watchlist" />
     <meta name="author" content="CineVault Engineering" />
     <meta name="robots" content="index, follow" />
 
@@ -29,7 +38,7 @@
     <meta property="og:title" content="CineVault — Premium Cinema Hub & AI Assistant" />
     <meta
       property="og:description"
-      content="Discover trending movies, explore curated genres, interact with CineBot AI Assistant for smart recommendations, and experience 3D movie showcases on CineVault."
+      content="Discover trending movies, explore curated genres, and get AI-powered recommendations from CineBot on CineVault."
     />
     <meta property="og:site_name" content="CineVault" />
 
@@ -38,10 +47,10 @@
     <meta name="twitter:title" content="CineVault — Premium Cinema Hub & AI Assistant" />
     <meta
       name="twitter:description"
-      content="Discover trending movies, explore curated genres, interact with CineBot AI Assistant for smart recommendations, and experience 3D movie showcases on CineVault."
+      content="Discover trending movies, explore curated genres, and get AI-powered recommendations from CineBot on CineVault."
     />
   </head>
-  <body class="bg-[#090d16] text-white antialiased">
+  <body class="bg-cinema-black text-cinema-white antialiased">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

@@ -1,12 +1,5 @@
-import { createContext, useContext, useMemo, useState } from 'react'
-
-interface ChatbotContextValue {
-  isOpen: boolean
-  toggleChat: () => void
-  closeChat: () => void
-}
-
-const ChatbotContext = createContext<ChatbotContextValue | undefined>(undefined)
+import { useMemo, useState } from 'react'
+import { ChatbotContext } from './chatbot-context'
 
 export function ChatbotProvider({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false)
@@ -18,13 +11,3 @@ export function ChatbotProvider({ children }: { children: React.ReactNode }) {
 
   return <ChatbotContext.Provider value={value}>{children}</ChatbotContext.Provider>
 }
-
-export function useChatbot() {
-  const context = useContext(ChatbotContext)
-  if (!context) {
-    throw new Error('useChatbot must be used within a ChatbotProvider')
-  }
-  return context
-}
-
-// ✅ src/context/ChatbotContext.tsx complete

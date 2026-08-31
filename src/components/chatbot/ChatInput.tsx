@@ -42,7 +42,7 @@ export function ChatInput({ onSend, onStop, isStreaming, isThinking, disabled = 
   }, [disabled])
 
   return (
-    <div className="border-t border-white/10 bg-cinema-dark/90 p-3">
+    <div className="border-t border-theme bg-cinema-dark/90 p-3">
       <textarea
         ref={textareaRef}
         value={value}
@@ -53,10 +53,10 @@ export function ChatInput({ onSend, onStop, isStreaming, isThinking, disabled = 
         disabled={disabled}
         aria-label="Message CineBot"
         aria-invalid={tooLong}
-        className={`min-h-[48px] w-full resize-none rounded-xl border bg-white/5 px-4 py-3 text-sm text-cinema-white outline-none placeholder:text-cinema-muted transition-all ${
+        className={`min-h-[48px] w-full resize-none rounded-xl border bg-glass px-4 py-3 text-sm text-cinema-white outline-none placeholder:text-cinema-muted transition-all ${
           tooLong
             ? 'border-cinema-red focus:border-cinema-red focus:ring-2 focus:ring-cinema-red/40'
-            : 'border-white/10 focus:border-cinema-blue focus:ring-2 focus:ring-cinema-blue/40'
+            : 'border-theme focus:border-cinema-blue focus:ring-2 focus:ring-cinema-blue/40'
         }`}
       />
       <div className="mt-2 flex items-center justify-between gap-2">

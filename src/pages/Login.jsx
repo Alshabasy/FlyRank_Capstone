@@ -142,21 +142,21 @@ export default function Login() {
   }
 
   return (
-    <main className="min-h-screen bg-cinema-black px-4 py-12 text-white sm:px-6 lg:px-8">
-      <div className="mx-auto grid max-w-6xl gap-12 rounded-3xl border border-white/10 bg-[#0b111f]/90 p-6 shadow-cinema sm:p-10 lg:grid-cols-[1.2fr_1fr]">
+    <main className="min-h-screen bg-cinema-black px-4 py-12 text-cinema-white sm:px-6 lg:px-8">
+      <div className="mx-auto grid max-w-6xl gap-12 rounded-3xl border border-theme bg-[#0b111f]/90 p-6 shadow-cinema sm:p-10 lg:grid-cols-[1.2fr_1fr]">
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-cinema-red/20 via-transparent to-cinema-blue/10 p-6 sm:p-10">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(229,9,20,0.15),transparent)]" />
           <div className="relative space-y-4">
-            <h1 className="text-4xl font-semibold text-white">Welcome back to CineVault</h1>
+            <h1 className="text-4xl font-semibold text-cinema-white">Welcome back to CineVault</h1>
             <p className="max-w-md text-cinema-muted">
               Search, save, and explore your favorite cinema classics with secure auth and a cinematic experience.
             </p>
             <div className="grid gap-4 pt-6">
-              <div className="rounded-3xl bg-[#111827]/80 p-4 shadow-inner">
+              <div className="rounded-3xl bg-cinema-dark/80 p-4 shadow-inner">
                 <p className="text-sm text-cinema-blue">Featured</p>
                 <p className="mt-2 text-lg font-semibold">Classic poster collage</p>
               </div>
-              <div className="rounded-3xl bg-[#111827]/80 p-4 shadow-inner">
+              <div className="rounded-3xl bg-cinema-dark/80 p-4 shadow-inner">
                 <p className="text-sm text-cinema-muted">Security</p>
                 <p className="mt-2 text-lg font-semibold">Firebase Auth protected watchlist</p>
               </div>
@@ -167,17 +167,17 @@ export default function Login() {
         <div className="rounded-3xl bg-cinema-dark/90 p-6 sm:p-8">
           <div className="mb-6 flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-semibold text-white">{mode === 'login' ? 'Sign In' : 'Create Account'}</h2>
+              <h2 className="text-2xl font-semibold text-cinema-white">{mode === 'login' ? 'Sign In' : 'Create Account'}</h2>
               <p className="text-sm text-cinema-muted">
                 {mode === 'login' ? 'Access your watchlist' : 'Start saving your favorite movies'}
               </p>
             </div>
-            <div className="flex gap-2 rounded-full bg-white/5 p-1">
+            <div className="flex gap-2 rounded-full bg-glass p-1">
               <button
                 type="button"
                 onClick={() => setMode('login')}
                 className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                  mode === 'login' ? 'bg-cinema-red text-white' : 'text-cinema-muted hover:text-white'
+                  mode === 'login' ? 'bg-cinema-red text-cinema-white' : 'text-cinema-muted hover:text-cinema-white'
                 }`}
               >
                 Login
@@ -186,7 +186,7 @@ export default function Login() {
                 type="button"
                 onClick={() => setMode('register')}
                 className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                  mode === 'register' ? 'bg-cinema-red text-white' : 'text-cinema-muted hover:text-white'
+                  mode === 'register' ? 'bg-cinema-red text-cinema-white' : 'text-cinema-muted hover:text-cinema-white'
                 }`}
               >
                 Register

@@ -56,6 +56,6 @@ describe('MovieSearchResults Component', () => {
     renderWithRouter(<MovieSearchResults movies={movies} totalResults={1} query="unknown" />)
 
     expect(screen.getByText('Unknown Title')).toBeInTheDocument()
-    expect(screen.getAllByText('No art')[0]).toBeInTheDocument()
+    expect(screen.getByLabelText(/open details for unknown title/i)).toBeInTheDocument()
   })
 })
