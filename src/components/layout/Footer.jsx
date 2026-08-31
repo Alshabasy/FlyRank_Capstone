@@ -15,9 +15,6 @@ export default function Footer() {
           <Link to="/favourites" className="transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cinema-red rounded px-1">
             Favourites
           </Link>
-          <Link to="/demo" className="transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cinema-red rounded px-1">
-            Demo Showcase
-          </Link>
         </nav>
       </div>
     </footer>

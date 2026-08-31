@@ -1,13 +1,16 @@
+import { useId } from 'react'
 import { motion } from 'framer-motion'
 import { RiRobot2Line } from 'react-icons/ri'
 import type { CineBotUIMessage } from '../../lib/chat-types'
 import { SearchMoviesToolView } from './SearchMoviesToolView'
+import { MovieDetailsToolView } from './MovieDetailsToolView'
 
 interface ChatMessageProps {
   message: CineBotUIMessage
   isStreaming?: boolean
   onRetryTool?: () => void
   onTryExample?: (prompt: string) => void
+  onDismissChat?: () => void
   retryDisabled?: boolean
 }
 
@@ -19,13 +22,14 @@ function formatTime(date: Date | number | string | undefined) {
   }).format(value)
 }
 
-function renderText(content: string) {
+function renderText(content: string, baseId: string) {
   const lines = content.split('\n')
 
   return lines.map((line, index) => {
+    const lineId = `${baseId}-l${index}`
     if (line.startsWith('•')) {
       return (
-        <div key={`${line}-${index}`} className="ml-3 mt-1 list-disc text-sm leading-6">
+        <div key={lineId} className="ml-3 mt-1 list-disc text-sm leading-6">
           {line.replace('•', '')}
         </div>
       )
@@ -33,12 +37,12 @@ function renderText(content: string) {
 
     const parts = line.split(/(\*\*.*?\*\*)/g)
     return (
-      <div key={`${line}-${index}`} className="text-sm leading-6">
+      <div key={lineId} className="text-sm leading-6">
         {parts.map((part, partIndex) => {
           if (part.startsWith('**') && part.endsWith('**')) {
-            return <strong key={partIndex}>{part.slice(2, -2)}</strong>
+            return <strong key={`${lineId}-p${partIndex}`}>{part.slice(2, -2)}</strong>
           }
-          return <span key={partIndex}>{part}</span>
+          return <span key={`${lineId}-p${partIndex}`}>{part}</span>
         })}
       </div>
     )
@@ -50,11 +54,14 @@ export function ChatMessage({
   isStreaming = false,
   onRetryTool,
   onTryExample,
+  onDismissChat,
   retryDisabled = false,
 }: ChatMessageProps) {
+  const stableId = useId()
   const isUser = message.role === 'user'
   const textParts = message.parts.filter((part) => part.type === 'text')
-  const toolParts = message.parts.filter((part) => part.type === 'tool-searchMovies')
+  const toolSearchParts = message.parts.filter((part) => part.type === 'tool-searchMovies')
+  const toolDetailsParts = message.parts.filter((part) => part.type === 'tool-getMovieDetails')
   const combinedText = textParts.map((part) => (part.type === 'text' ? part.text : '')).join('')
 
   return (
@@ -79,26 +86,40 @@ export function ChatMessage({
             }`}
             style={isUser ? { borderRadius: '16px 16px 4px 16px' } : { borderRadius: '16px 16px 16px 4px' }}
           >
-            {renderText(combinedText || (isStreaming ? '' : '...'))}
+            {renderText(combinedText || (isStreaming ? '' : '...'), stableId)}
             {isStreaming && !isUser ? (
               <span className="ml-1 inline-block h-4 w-2 animate-[blink_1s_step-end_infinite] bg-cinema-white" />
             ) : null}
           </div>
         ) : null}
 
-        {!isUser
-          ? toolParts.map((part) =>
+        {!isUser ? (
+          <>
+            {toolSearchParts.map((part) =>
               part.type === 'tool-searchMovies' ? (
                 <SearchMoviesToolView
                   key={part.toolCallId}
                   part={part}
                   onRetry={onRetryTool}
                   onTryExample={onTryExample}
+                  onDismissChat={onDismissChat}
                   retryDisabled={retryDisabled}
                 />
               ) : null,
-            )
-          : null}
+            )}
+            {toolDetailsParts.map((part) =>
+              part.type === 'tool-getMovieDetails' ? (
+                <MovieDetailsToolView
+                  key={part.toolCallId}
+                  part={part}
+                  onRetry={onRetryTool}
+                  onDismissChat={onDismissChat}
+                  retryDisabled={retryDisabled}
+                />
+              ) : null,
+            )}
+          </>
+        ) : null}
 
         <p className="mt-1 text-xs text-cinema-muted">{formatTime(undefined)}</p>
       </div>

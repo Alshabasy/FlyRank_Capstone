@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, lazy, Suspense } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { getMoviesByGenre, getTrendingMovies } from '../utils/omdb'
 import MovieRow from '../components/movie/MovieRow'
 import LoadingSpinner from '../components/ui/LoadingSpinner'
@@ -6,8 +6,6 @@ import { useFavourites } from '../hooks/useFavourites'
 import { useAuth } from '../context/AuthContext'
 import { Link, useNavigate } from 'react-router-dom'
 import { RiFilmLine, RiStarFill } from 'react-icons/ri'
-
-const CinematicShaderHero = lazy(() => import('../components/shaders/CinematicShaderHero'))
 
 export default function Home() {
   const [heroMovie, setHeroMovie] = useState(null)
@@ -63,9 +61,20 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-cinema-black text-white">
       <section className="relative overflow-hidden">
-        <Suspense fallback={<div className="absolute inset-0 bg-gradient-to-b from-[#0a0e27] via-[#08080f] to-cinema-black" aria-hidden="true" />}>
-          <CinematicShaderHero />
-        </Suspense>
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,_rgba(29,78,216,0.35),_transparent_55%),radial-gradient(ellipse_at_80%_70%,_rgba(229,9,20,0.25),_transparent_60%),radial-gradient(ellipse_at_50%_100%,_rgba(91,33,182,0.2),_transparent_70%),linear-gradient(180deg,_#08080f_0%,_#0a0e27_50%,_#08080f_100%)]"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage:
+              'linear-gradient(rgba(255,255,255,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.6) 1px, transparent 1px)',
+            backgroundSize: '48px 48px',
+            maskImage: 'radial-gradient(ellipse at center, black 40%, transparent 80%)',
+          }}
+        />
         <div className="absolute inset-0 bg-gradient-to-b from-cinema-black/35 via-transparent to-cinema-black/85" aria-hidden="true" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_0%,_rgba(8,8,15,0.35)_80%)]" aria-hidden="true" />
         <div className="relative mx-auto flex min-h-[80vh] max-w-7xl items-center px-4 pb-20 pt-24 sm:px-6 lg:px-8">

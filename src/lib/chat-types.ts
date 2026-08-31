@@ -1,5 +1,6 @@
 import type { UIMessage } from 'ai'
 import type { SearchMoviesOutput } from './tools/search-movies'
+import type { GetMovieDetailsOutput } from './tools/get-movie-details'
 
 export type CineBotTools = {
   searchMovies: {
@@ -8,6 +9,12 @@ export type CineBotTools = {
       page?: number
     }
     output: SearchMoviesOutput
+  }
+  getMovieDetails: {
+    input: {
+      imdbIds: string[]
+    }
+    output: GetMovieDetailsOutput
   }
 }
 

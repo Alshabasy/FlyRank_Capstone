@@ -10,6 +10,7 @@ import {
 } from 'ai'
 import { SYSTEM_PROMPT, MODEL_CONFIG, resolveAiApiKey, resolveChatModel, isDevSabotageAllowed } from './_lib/ai-config.js'
 import { executeSearchMovies, SearchMoviesSchema } from './_lib/search-movies.js'
+import { executeGetMovieDetails, GetMovieDetailsSchema } from './_lib/get-movie-details.js'
 import { checkRateLimit, makeRateLimitedResponse, applyRateLimitHeaders } from './_lib/rate-limit.js'
 import {
   ChatRequestSchema,
@@ -38,9 +39,16 @@ function json(status, body, rateInfo) {
 
 const searchMoviesTool = tool({
   description:
-    'Search OMDb for real movie results. Use whenever the user asks to find, search, or list movies by title, genre, year, actor, or similar criteria. Do not invent search results.',
+    'Search OMDb for real movie results. Use whenever the user asks to find, search, or list movies by title, genre, year, actor, mood, era, or similar criteria. Returns candidate matches — call getMovieDetails next for 2-5 top picks to get rating, genre, runtime, plot, director, and cast.',
   inputSchema: SearchMoviesSchema,
   execute: async (input) => executeSearchMovies(input),
+})
+
+const getMovieDetailsTool = tool({
+  description:
+    'Fetch full metadata (IMDb rating, genre, runtime, director, cast, plot, awards, country, poster) for up to 5 specific movies by their IMDb IDs. Use after searchMovies when recommending or comparing movies so you can justify picks with real data instead of guessing.',
+  inputSchema: GetMovieDetailsSchema,
+  execute: async (input) => executeGetMovieDetails(input),
 })
 
 export default async function handler(request) {
@@ -149,6 +157,7 @@ export default async function handler(request) {
       messages: await convertToModelMessages(messages),
       tools: {
         searchMovies: searchMoviesTool,
+        getMovieDetails: getMovieDetailsTool,
       },
       stopWhen: stepCountIs(5),
       temperature: MODEL_CONFIG.temperature,

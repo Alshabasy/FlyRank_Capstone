@@ -22,14 +22,6 @@ export default defineConfig({
           if (id.includes('node_modules/framer-motion')) {
             return 'vendor-framer'
           }
-          // Three.js / R3F / Drei are code-split via React.lazy, but if
-          // anything leaks into the main graph, catch it here
-          if (
-            id.includes('node_modules/three') ||
-            id.includes('node_modules/@react-three')
-          ) {
-            return 'vendor-three'
-          }
           // AI SDK (Vercel AI + Google Generative AI)
           if (
             id.includes('node_modules/ai') ||

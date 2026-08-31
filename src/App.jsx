@@ -14,7 +14,6 @@ const Categories = lazy(() => import('./pages/Categories'))
 const Favourites = lazy(() => import('./pages/Favourites'))
 const Login = lazy(() => import('./pages/Login'))
 const MovieDetail = lazy(() => import('./pages/MovieDetail'))
-const ButtonDemoPage = lazy(() => import('./pages/ButtonDemoPage'))
 
 // ----- Lazy-loaded chatbot (not needed on initial paint) -----
 const ChatbotButton = lazy(() =>
@@ -65,16 +64,6 @@ function AnimatedRoutes() {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>
               <Suspense fallback={<PageFallback />}>
                 <Favourites />
-              </Suspense>
-            </motion.div>
-          }
-        />
-        <Route
-          path="/demo"
-          element={
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>
-              <Suspense fallback={<PageFallback />}>
-                <ButtonDemoPage />
               </Suspense>
             </motion.div>
           }

@@ -11,9 +11,10 @@ import { JumpToLatestButton } from './JumpToLatestButton'
 import { ThinkingIndicator } from './ThinkingIndicator'
 
 const EXAMPLE_PROMPTS = [
-  'Find sci-fi movies from 2020',
-  'Find movies starring Tom Hanks',
-  'Find movies similar to Inception',
+  'Dark psychological thrillers from the last 10 years',
+  'Family movies tonight, nothing violent',
+  'Like Interstellar but less complicated',
+  '80s action classics with high ratings',
 ]
 
 function getPageContext(pathname: string) {
@@ -171,6 +172,7 @@ export function ChatPanel() {
                       isStreaming={lastIsStreaming && index === messages.length - 1}
                       onRetryTool={() => void retryLast()}
                       onTryExample={(prompt) => void handleSend(prompt)}
+                      onDismissChat={closeChat}
                       retryDisabled={busy}
                     />
                   ))}

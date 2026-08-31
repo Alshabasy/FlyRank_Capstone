@@ -160,6 +160,7 @@ export function useGeminiChat(): UseGeminiChatReturn {
   const lastUserTextRef = useRef<string | null>(null)
   const [uiError, setUiError] = useState<ChatErrorState | null>(null)
   const [hasFirstToken, setHasFirstToken] = useState(false)
+  const [lastFailedUserText, setLastFailedUserText] = useState<string | null>(null)
 
   const chatRef = useRef<ReactChat<CineBotUIMessage> | null>(null)
 
@@ -244,6 +245,7 @@ export function useGeminiChat(): UseGeminiChatReturn {
 
       pageContextRef.current = pageContext
       lastUserTextRef.current = trimmed
+      setLastFailedUserText(trimmed)
       setUiError(null)
       setHasFirstToken(false)
 
@@ -253,7 +255,7 @@ export function useGeminiChat(): UseGeminiChatReturn {
         setUiError(mapError(error))
       }
     },
-    [chat, snapshot.status],
+    [chat, snapshot.status, setLastFailedUserText, setUiError, setHasFirstToken],
   )
 
   const retryLast = useCallback(async () => {
@@ -276,25 +278,26 @@ export function useGeminiChat(): UseGeminiChatReturn {
     } catch (error) {
       setUiError(mapError(error))
     }
-  }, [chat, snapshot.messages, snapshot.status, uiError])
+  }, [chat, snapshot.messages, snapshot.status, uiError, setUiError])
 
   const stopStreaming = useCallback(() => {
     void chat.stop()
     setUiError(null)
-  }, [chat])
+  }, [chat, setUiError])
 
   const clearMessages = useCallback(() => {
     void chat.stop()
     chat.messages = []
     lastUserTextRef.current = null
+    setLastFailedUserText(null)
     setUiError(null)
     setHasFirstToken(false)
-  }, [chat])
+  }, [chat, setLastFailedUserText, setUiError, setHasFirstToken])
 
   const clearError = useCallback(() => {
     chat.clearError()
     setUiError(null)
-  }, [chat])
+  }, [chat, setUiError])
 
   const isStreaming = snapshot.status === 'streaming'
   const isThinking = snapshot.status === 'submitted' || (isStreaming && !hasFirstToken)
@@ -306,7 +309,7 @@ export function useGeminiChat(): UseGeminiChatReturn {
       isThinking,
       isStreaming,
       error: uiError,
-      lastFailedUserText: lastUserTextRef.current,
+      lastFailedUserText,
       sendMessage,
       retryLast,
       stopStreaming,
@@ -318,6 +321,7 @@ export function useGeminiChat(): UseGeminiChatReturn {
       clearMessages,
       isStreaming,
       isThinking,
+      lastFailedUserText,
       retryLast,
       sendMessage,
       snapshot.messages,

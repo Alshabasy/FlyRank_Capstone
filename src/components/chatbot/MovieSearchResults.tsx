@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+import { RiFilmLine, RiArrowRightLine } from 'react-icons/ri'
 import type { MovieHit } from '../../lib/tools/search-movies'
 
 interface MovieSearchResultsProps {
@@ -5,16 +7,17 @@ interface MovieSearchResultsProps {
   totalResults: number
   query: string
   onTryExample?: (prompt: string) => void
+  onDismissChat?: () => void
 }
 
-function Poster({ poster }: { poster: string | null }) {
+function Poster({ poster, alt }: { poster: string | null; alt: string }) {
   if (!poster) {
     return (
       <div
-        className="flex h-20 w-14 flex-none items-center justify-center rounded-sm bg-white/10 text-[10px] text-cinema-muted"
+        className="flex h-24 w-16 flex-none items-center justify-center rounded-sm bg-white/10 text-[10px] text-cinema-muted"
         aria-hidden="true"
       >
-        No art
+        <RiFilmLine className="h-6 w-6 opacity-60" />
       </div>
     )
   }
@@ -22,8 +25,8 @@ function Poster({ poster }: { poster: string | null }) {
   return (
     <img
       src={poster}
-      alt=""
-      className="h-20 w-14 flex-none rounded-sm object-cover"
+      alt={alt}
+      className="h-24 w-16 flex-none rounded-sm object-cover"
       loading="lazy"
       onError={(event) => {
         event.currentTarget.style.display = 'none'
@@ -36,7 +39,7 @@ function Poster({ poster }: { poster: string | null }) {
   )
 }
 
-export function MovieSearchResults({ movies, totalResults, query, onTryExample }: MovieSearchResultsProps) {
+export function MovieSearchResults({ movies, totalResults, query, onTryExample, onDismissChat }: MovieSearchResultsProps) {
   if (!movies.length) {
     return (
       <div className="m-1 rounded-xl border border-white/10 bg-white/5 p-4" role="status">
@@ -45,7 +48,7 @@ export function MovieSearchResults({ movies, totalResults, query, onTryExample }
           Nothing matched &ldquo;{query}&rdquo;. Try a broader title or different keywords.
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
-          {['Find sci-fi movies from 2020', 'Find movies starring Tom Hanks', 'Find movies similar to Inception'].map(
+          {['Sci-fi movies from 2020', 'Movies starring Tom Hanks', 'Similar to Inception'].map(
             (example) => (
               <button
                 key={example}
@@ -64,30 +67,51 @@ export function MovieSearchResults({ movies, totalResults, query, onTryExample }
 
   return (
     <section className="m-1 overflow-hidden rounded-xl border border-white/10 bg-white/5" aria-label="Movie search results">
-      <header className="border-b border-white/10 px-3 py-2">
-        <p className="text-sm font-semibold text-cinema-white">Movie Results</p>
-        <p className="text-xs text-cinema-muted">
-          {totalResults} match{totalResults === 1 ? '' : 'es'} for &ldquo;{query}&rdquo;
-        </p>
+      <header className="flex items-center justify-between gap-2 border-b border-white/10 px-3 py-2">
+        <div>
+          <p className="text-sm font-semibold text-cinema-white">Movie Results</p>
+          <p className="text-xs text-cinema-muted">
+            {totalResults} match{totalResults === 1 ? '' : 'es'} for &ldquo;{query}&rdquo;
+          </p>
+        </div>
+        <p className="text-[10px] uppercase tracking-wider text-cinema-muted">Tap a card to open details</p>
       </header>
-      <ul className="grid max-h-72 grid-cols-1 gap-2 overflow-y-auto p-3 sm:grid-cols-1">
+      <ul className="grid max-h-80 grid-cols-1 gap-2 overflow-y-auto p-3">
         {movies.map((movie, index) => (
           <li key={movie.imdbId || index}>
-            <article className="flex gap-3 rounded-lg border border-white/10 bg-cinema-dark/60 p-2">
-              <Poster poster={movie.poster} />
+            <Link
+              to={`/movie/${movie.imdbId}`}
+              onClick={() => onDismissChat?.()}
+              className="group flex gap-3 rounded-lg border border-white/10 bg-cinema-dark/60 p-2 transition hover:border-cinema-blue/60 hover:bg-cinema-dark/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cinema-blue"
+              aria-label={`Open details for ${movie.title}`}
+            >
+              <Poster poster={movie.poster} alt={`${movie.title} poster`} />
               <div
-                className="flex h-20 w-14 flex-none items-center justify-center rounded-sm bg-white/10 text-[10px] text-cinema-muted"
+                className="flex h-24 w-16 flex-none items-center justify-center rounded-sm bg-white/10 text-[10px] text-cinema-muted"
                 hidden
                 aria-hidden="true"
               >
-                No art
+                <RiFilmLine className="h-6 w-6 opacity-60" />
               </div>
-              <div className="min-w-0">
-                <h4 className="truncate text-sm font-semibold text-cinema-white">{movie.title}</h4>
-                <p className="mt-1 text-xs text-cinema-muted">{movie.year}</p>
-                <p className="mt-1 text-xs capitalize text-cinema-muted">{movie.type}</p>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-start justify-between gap-2">
+                  <h4 className="truncate text-sm font-semibold text-cinema-white group-hover:text-cinema-white">
+                    {movie.title}
+                  </h4>
+                  <RiArrowRightLine
+                    className="mt-0.5 h-4 w-4 flex-none text-cinema-muted transition group-hover:translate-x-0.5 group-hover:text-cinema-blue"
+                    aria-hidden="true"
+                  />
+                </div>
+                <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-cinema-muted">
+                  <span>{movie.year}</span>
+                  <span className="capitalize">{movie.type}</span>
+                </div>
+                <p className="mt-2 truncate text-[11px] text-cinema-muted/80">
+                  IMDb ID: <span className="font-mono">{movie.imdbId}</span>
+                </p>
               </div>
-            </article>
+            </Link>
           </li>
         ))}
       </ul>

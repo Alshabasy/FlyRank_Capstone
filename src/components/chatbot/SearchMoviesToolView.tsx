@@ -13,6 +13,7 @@ interface SearchMoviesToolViewProps {
   part: SearchMoviesPart
   onRetry?: () => void
   onTryExample?: (prompt: string) => void
+  onDismissChat?: () => void
   retryDisabled?: boolean
 }
 
@@ -20,6 +21,7 @@ export function SearchMoviesToolView({
   part,
   onRetry,
   onTryExample,
+  onDismissChat,
   retryDisabled = false,
 }: SearchMoviesToolViewProps) {
   switch (part.state) {
@@ -64,6 +66,7 @@ export function SearchMoviesToolView({
           totalResults={output.totalResults}
           query={output.query}
           onTryExample={onTryExample}
+          onDismissChat={onDismissChat}
         />
       )
     }
